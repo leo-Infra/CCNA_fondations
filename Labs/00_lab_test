@@ -1,1 +1,50 @@
-test
+Exemple concret : lab-01-static-ip.md
+
+Structure d’un lab :
+
+⸻
+
+🎯 Objectif
+
+Configurer deux machines avec IP statiques et vérifier la connectivité.
+
+⸻
+
+🏗️ Topologie
+
+PC1 — SW1 — PC2
+
+(Insérer capture image)
+
+⸻
+
+⚙️ Configuration
+
+PC1 :
+IP : 192.168.1.10
+Masque : 255.255.255.0
+
+PC2 :
+IP : 192.168.1.20
+Masque : 255.255.255.0
+
+⸻
+
+🔎 Résultat
+
+Ping réussi entre PC1 et PC2.
+
+⸻
+
+🧠 Ce que j’ai compris
+	•	Le ping utilise ICMP.
+	•	Avant le ping, une requête ARP permet de récupérer l’adresse MAC.
+	•	Les deux machines doivent être dans le même réseau logique.
+
+⸻
+
+⚠️ Problème possible
+
+Si le masque est incorrect :
+	•	Les machines ne se considèrent plus dans le même réseau.
+	•	Le ping échoue.
