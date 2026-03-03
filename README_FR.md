@@ -8,7 +8,7 @@ L’objectif est de comprendre en profondeur les mécanismes réseau, de savoir 
 
 ---
 
-## 🧠 Périmètre couvert
+## Périmètre couvert
 
 Ce repository se concentre sur les fondamentaux suivants :
 
@@ -23,7 +23,7 @@ Ce repository se concentre sur les fondamentaux suivants :
 
 ---
 
-## 🛠️ Outils utilisés
+## Outils utilisés
 
 - Cisco Packet Tracer
 - CLI Cisco (IOS)
@@ -32,22 +32,22 @@ Ce repository se concentre sur les fondamentaux suivants :
 
 ---
 
-## 🧪 Structure des labs
+## Structure des labs
 
 Chaque lab documenté contient :
 
-- 🎯 Objectif
-- 🏗️ Topologie réseau
-- ⚙️ Étapes de configuration
-- 🔎 Vérification des résultats
-- 🛑 Scénario de problème volontaire
-- 🧠 Points clés retenus
+- Objectif
+- Topologie réseau
+- Étapes de configuration
+- Vérification des résultats
+- Scénario de problème volontaire
+- Points clés retenus
 
 L’objectif est de comprendre réellement les mécanismes réseau, de savoir diagnostiquer efficacement et d’ancrer les connaissances sur le long terme, au-delà de la simple configuration fonctionnelle.
 
 ---
 
-## 📈 Progression actuelle
+## Progression actuelle
 
 - [x] Configuration IP statique  
 - [x] Test de connectivité ICMP (ping)  
@@ -59,7 +59,7 @@ L’objectif est de comprendre réellement les mécanismes réseau, de savoir di
 
 ---
 
-## 📌 Méthodologie de travail
+## Méthodologie de travail
 
 Approche adoptée :
 
