@@ -1,0 +1,17 @@
+# Connecting Devices
+
+Devices in a network are connected using different types of cables.
+
+Common cables
+
+Straight-through cable  
+Used to connect different devices
+
+Example  
+PC → Switch
+
+Crossover cable  
+Used to connect similar devices
+
+Example  
+Switch → Switch
