@@ -1,0 +1,16 @@
+# Ethernet LAN Switching
+
+Switches operate at Layer 2 of the OSI model.
+
+Key concepts
+
+MAC address table  
+Switch learns MAC addresses dynamically.
+
+Frame forwarding  
+Frames are sent only to the correct port.
+
+Broadcast traffic  
+Broadcast frames are sent to all ports except the incoming one.
+
+Switching improves network efficiency compared to hubs.
