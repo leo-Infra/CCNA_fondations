@@ -1,0 +1,12 @@
+# Basic Device Security
+
+Network devices must be secured to prevent unauthorized access.
+
+Basic security measures
+
+- Configure device passwords
+- Secure console access
+- Configure enable password
+- Restrict remote access
+
+These configurations protect the device configuration from unauthorized users.
