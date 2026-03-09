@@ -1,0 +1,24 @@
+# Network Devices
+
+Main concepts learned
+
+Network infrastructure is composed of different types of devices.
+
+Key devices:
+
+Router  
+- Connects different networks  
+- Operates at Layer 3
+
+Switch  
+- Connects devices inside a LAN  
+- Uses MAC addresses  
+- Operates at Layer 2
+
+Access Point  
+- Provides wireless connectivity
+
+Firewall  
+- Controls traffic entering or leaving a network
+
+Understanding these devices is fundamental for network architecture.
