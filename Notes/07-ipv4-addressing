@@ -1,0 +1,14 @@
+# IPv4 Addressing
+
+IPv4 addresses identify devices on a network.
+
+Example
+
+192.168.1.10
+
+Structure
+
+Network part  
+Host part
+
+Subnet mask defines which part identifies the network.
