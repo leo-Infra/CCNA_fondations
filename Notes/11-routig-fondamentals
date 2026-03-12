@@ -1,0 +1,127 @@
+# 11-Routing Fundamentals – Notes
+
+## Routing table
+
+Un routeur stocke les informations sur les destinations qu’il connaît dans une **routing table**.
+
+Quand un paquet arrive :
+1. Le routeur regarde l'adresse IP de destination.
+2. Il cherche une route correspondante dans la table.
+3. Il envoie le paquet vers la meilleure route disponible.
+
+Chaque entrée dans la routing table indique **où envoyer le paquet** pour atteindre un réseau.
+
+---
+
+## Types de routes importantes
+
+### Connected route (C)
+
+Une **connected route** est automatiquement créée quand on configure une adresse IP sur une interface.
+
+Exemple :
+
+Interface IP  
+192.168.1.1/24
+
+Route créée automatiquement :
+
+192.168.1.0/24
+
+Cela signifie que le routeur est directement connecté à ce réseau.
+
+Si un paquet doit atteindre une machine de ce réseau, le routeur l'envoie directement via l'interface correspondante.
+
+---
+
+### Local route (L)
+
+Une **local route** correspond à **l'adresse IP exacte du routeur**.
+
+Exemple :
+
+Interface IP  
+192.168.1.1/24
+
+Route locale :
+
+192.168.1.1/32
+
+Le masque `/32` signifie **une seule adresse IP**.
+
+Si un paquet est destiné à cette adresse, il est **reçu par le routeur lui-même**.
+
+---
+
+## Correspondance d'une route
+
+Une route correspond à un paquet si l'adresse IP de destination appartient au réseau de la route.
+
+Exemple :
+
+Route :
+192.168.1.0/24
+
+Adresses correspondantes :
+192.168.1.10  
+192.168.1.60  
+192.168.1.200  
+
+Mais **192.168.0.10 ne correspond pas** à cette route.
+
+---
+
+## Sélection de route
+
+Si plusieurs routes correspondent à une destination, le routeur choisit **la route la plus spécifique**.
+
+La route la plus spécifique est celle avec **le prefix le plus long**.
+
+Exemple :
+
+192.168.1.0/24  
+192.168.1.1/32
+
+Si un paquet est destiné à :
+
+192.168.1.1
+
+Le routeur utilisera :
+
+192.168.1.1/32
+
+car cette route correspond **exactement à l'adresse IP**.
+
+---
+
+## Si aucune route ne correspond
+
+Si le routeur ne trouve aucune route correspondant à la destination :
+
+le paquet est **drop (supprimé)**.
+
+Contrairement aux switches, les routeurs **ne floodent pas le réseau**.
+
+---
+
+## Commande importante
+
+Pour afficher la routing table sur un routeur Cisco :
+
+show ip route
+
+Cette commande permet de voir :
+
+- les réseaux connus
+- les routes connectées
+- les routes locales
+- les protocoles de routage utilisés
+
+---
+
+## Points importants à retenir
+
+- Un routeur décide où envoyer un paquet grâce à la **routing table**.
+- Configurer une IP sur une interface crée automatiquement **une connected route et une local route**.
+- Le routeur choisit toujours **la route la plus spécifique**.
+- Sans route correspondante, le paquet est **supprimé**.
