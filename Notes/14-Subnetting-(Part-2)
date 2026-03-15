@@ -1,0 +1,438 @@
+# 14-Subnetting (Part 2)
+
+## Suite du subnetting
+
+Cette partie continue l’apprentissage du subnetting avec :
+
+- des exercices sur les réseaux de classe C
+- l’introduction du subnetting sur les réseaux de classe B
+- une méthode plus claire pour résoudre les problèmes
+
+Le principe reste toujours le même :
+
+- déterminer le nombre de sous-réseaux nécessaires
+- déterminer le nombre d’hôtes nécessaires
+- choisir le bon préfixe
+
+---
+
+## Correction de l’exercice précédent
+
+Réseau donné :
+
+192.168.1.0/24
+
+Objectif :
+
+Créer 4 sous-réseaux pouvant contenir 45 hôtes chacun.
+
+Dans la partie précédente, on a vu que **/26** est le bon choix.
+
+Pourquoi ?
+
+- /27 donne 30 hôtes utilisables
+- /26 donne 62 hôtes utilisables
+
+Donc il faut utiliser :
+
+192.168.1.0/26
+
+---
+
+## Subnets en /26
+
+### Subnet 1
+Network address :
+
+192.168.1.0/26
+
+Broadcast address :
+
+192.168.1.63
+
+Range :
+
+192.168.1.0 → 192.168.1.63
+
+---
+
+### Subnet 2
+Network address :
+
+192.168.1.64/26
+
+Broadcast address :
+
+192.168.1.127
+
+Range :
+
+192.168.1.64 → 192.168.1.127
+
+---
+
+### Subnet 3
+Network address :
+
+192.168.1.128/26
+
+Broadcast address :
+
+192.168.1.191
+
+Range :
+
+192.168.1.128 → 192.168.1.191
+
+---
+
+### Subnet 4
+Network address :
+
+192.168.1.192/26
+
+Broadcast address :
+
+192.168.1.255
+
+Range :
+
+192.168.1.192 → 192.168.1.255
+
+---
+
+## Astuce importante : incrémentation
+
+Pour aller plus vite, on peut utiliser **la valeur du dernier bit emprunté**.
+
+Dans un /26 :
+
+- le masque est 255.255.255.192
+- le dernier bit du réseau dans le dernier octet vaut **64**
+
+Donc les sous-réseaux augmentent de :
+
+64
+
+Exemple :
+
+- 192.168.1.0
+- 192.168.1.64
+- 192.168.1.128
+- 192.168.1.192
+
+Cette valeur s’appelle souvent le **block size**.
+
+---
+
+## Exemple : créer 5 subnets de taille égale
+
+Réseau donné :
+
+192.168.255.0/24
+
+Objectif :
+
+Créer 5 sous-réseaux de taille égale.
+
+---
+
+## Nombre de sous-réseaux
+
+Formule :
+
+2^(bits empruntés)
+
+Si on emprunte :
+
+- 1 bit → 2 subnets
+- 2 bits → 4 subnets
+- 3 bits → 8 subnets
+
+Comme on a besoin de 5 subnets, 4 n’est pas suffisant.
+
+Il faut donc emprunter 3 bits.
+
+Le nouveau préfixe est :
+
+/27
+
+---
+
+## Subnets en /27
+
+Un /27 donne un block size de :
+
+32
+
+Les sous-réseaux sont donc :
+
+- 192.168.255.0/27
+- 192.168.255.32/27
+- 192.168.255.64/27
+- 192.168.255.96/27
+- 192.168.255.128/27
+- 192.168.255.160/27
+- 192.168.255.192/27
+- 192.168.255.224/27
+
+On en utilise 5, mais le /27 permet d’en créer 8.
+
+---
+
+## Identifier le subnet d’un hôte
+
+Exemple :
+
+Quel subnet contient l’hôte :
+
+192.168.5.57/27
+
+Méthode :
+
+- identifier le préfixe
+- mettre tous les bits hôtes à 0
+- retrouver l’adresse réseau
+
+Résultat :
+
+192.168.5.32/27
+
+Donc :
+
+192.168.5.57 appartient au subnet :
+
+192.168.5.32/27
+
+---
+
+## Deuxième exemple
+
+Hôte :
+
+192.168.29.219/29
+
+Résultat :
+
+192.168.29.216/29
+
+Donc :
+
+192.168.29.219 appartient au subnet :
+
+192.168.29.216/29
+
+---
+
+## Tableau mental des Class C
+
+Pour les réseaux de classe C, il faut surtout connaître les patterns :
+
+### /25
+- 2 subnets
+- 126 hôtes utilisables
+- block size : 128
+
+### /26
+- 4 subnets
+- 62 hôtes utilisables
+- block size : 64
+
+### /27
+- 8 subnets
+- 30 hôtes utilisables
+- block size : 32
+
+### /28
+- 16 subnets
+- 14 hôtes utilisables
+- block size : 16
+
+### /29
+- 32 subnets
+- 6 hôtes utilisables
+- block size : 8
+
+### /30
+- 64 subnets
+- 2 hôtes utilisables
+- block size : 4
+
+### /31
+- cas spécial point-to-point
+
+### /32
+- une seule adresse IP
+
+---
+
+## Subnetting Class B
+
+Le processus est exactement le même.
+
+La différence est qu’un réseau de classe B commence généralement avec :
+
+/16
+
+Donc il y a plus de bits disponibles pour faire des sous-réseaux.
+
+---
+
+## Exemple 1 : 80 subnets
+
+Réseau donné :
+
+172.16.0.0/16
+
+Objectif :
+
+Créer 80 subnets.
+
+On utilise :
+
+2^(bits empruntés)
+
+- 6 bits → 64 subnets
+- 7 bits → 128 subnets
+
+Il faut donc emprunter 7 bits.
+
+Préfixe final :
+
+/23
+
+Masque :
+
+255.255.254.0
+
+---
+
+## Exemple 2 : 500 subnets
+
+Réseau donné :
+
+172.22.0.0/16
+
+Objectif :
+
+Créer 500 subnets.
+
+- 8 bits → 256 subnets
+- 9 bits → 512 subnets
+
+Il faut donc emprunter 9 bits.
+
+Préfixe final :
+
+/25
+
+---
+
+## Exemple 3 : 250 subnets et 250 hosts par subnet
+
+Réseau donné :
+
+172.18.0.0/16
+
+Objectif :
+
+- 250 subnets
+- 250 hôtes par subnet
+
+Pour les subnets :
+
+- 8 bits empruntés → 256 subnets
+
+Pour les hosts :
+
+- 8 bits hôtes restants → 254 hôtes utilisables
+
+Donc le bon choix est :
+
+/24
+
+---
+
+## Identifier le subnet dans un Class B
+
+Exemple :
+
+Hôte :
+
+172.25.217.192/21
+
+Méthode :
+
+- écrire l’adresse
+- identifier les bits réseau / hôte
+- mettre les bits hôtes à 0
+
+Résultat :
+
+172.25.216.0/21
+
+---
+
+## Patterns à retenir
+
+### Nombre de subnets
+Chaque bit emprunté double le nombre de subnets :
+
+- 2
+- 4
+- 8
+- 16
+- 32
+- 64
+- 128
+- etc.
+
+### Nombre d’hôtes
+Chaque bit hôte double le nombre d’adresses disponibles.
+
+Formule :
+
+2^(bits hôtes) - 2
+
+Le `-2` correspond à :
+
+- network address
+- broadcast address
+
+---
+
+## Méthode simple de résolution
+
+Quand on te donne un exercice de subnetting :
+
+### 1. Lire la demande
+Exemple :
+- combien de subnets ?
+- combien d’hôtes ?
+
+### 2. Calculer les subnets
+Utiliser :
+
+2^(bits empruntés)
+
+### 3. Calculer les hosts
+Utiliser :
+
+2^(bits hôtes) - 2
+
+### 4. Choisir le plus petit préfixe qui fonctionne
+On prend toujours le plus petit subnet qui répond au besoin.
+
+### 5. Trouver les network addresses
+Avec le block size / incrémentation.
+
+---
+
+## Points importants à retenir
+
+- Le subnetting sur classe B suit exactement la même logique que sur classe C.
+- Chaque bit emprunté double le nombre de subnets.
+- Chaque bit hôte double le nombre d’adresses.
+- Le block size permet de trouver rapidement les network addresses.
+- Pour identifier le subnet d’un host, il faut mettre les bits hôtes à 0.
+- Le plus important n’est pas de mémoriser tous les tableaux, mais de comprendre les patterns.

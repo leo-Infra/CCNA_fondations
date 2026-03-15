@@ -1,0 +1,491 @@
+# 13-Subnetting (Part 1)
+
+## CIDR
+
+CIDR signifie **Classless Inter-Domain Routing**.
+
+CIDR remplace l’ancien système de classes IPv4 :
+
+- Class A
+- Class B
+- Class C
+
+Avec CIDR, on n’est plus obligé d’utiliser uniquement :
+
+- /8 pour class A
+- /16 pour class B
+- /24 pour class C
+
+Cela permet de créer des réseaux **plus petits et plus adaptés au besoin réel**.
+
+---
+
+## Rappel sur les classes IPv4
+
+### Class A
+Premier octet :
+
+0 à 127
+
+Préfixe par défaut :
+
+/8
+
+Cela donne :
+
+- peu de réseaux
+- énormément d’hôtes par réseau
+
+---
+
+### Class B
+Premier octet :
+
+128 à 191
+
+Préfixe par défaut :
+
+/16
+
+Cela donne :
+
+- plus de réseaux que la classe A
+- moins d’hôtes par réseau
+
+---
+
+### Class C
+Premier octet :
+
+192 à 223
+
+Préfixe par défaut :
+
+/24
+
+Cela donne :
+
+- beaucoup de réseaux
+- peu d’hôtes par réseau
+
+---
+
+### Class D
+Premier octet :
+
+224 à 239
+
+Utilisée pour des usages spéciaux.
+
+---
+
+### Class E
+Premier octet :
+
+240 à 255
+
+Utilisée pour des usages spéciaux / réservés.
+
+---
+
+## Problème du classful addressing
+
+L’ancien système attribuait des blocs trop grands.
+
+Exemple :
+
+Une petite entreprise qui a besoin d’environ 5000 adresses ne peut pas utiliser un réseau de classe C, car un /24 ne fournit pas assez d’adresses.
+
+Elle doit donc recevoir un réseau de classe B.
+
+Un /16 fournit environ :
+
+65536 adresses
+
+Résultat :
+
+énorme gaspillage d’adresses.
+
+---
+
+## Exemple de gaspillage
+
+### Cas 1 – Lien point-à-point
+Un réseau entre deux routeurs n’a besoin que de **2 adresses IP utilisables**.
+
+Si on utilise :
+
+203.0.113.0/24
+
+Un /24 fournit :
+
+256 adresses totales  
+254 adresses utilisables
+
+Pour seulement 2 routeurs, cela gaspille presque tout le bloc.
+
+---
+
+### Cas 2 – Entreprise
+Une entreprise a besoin de :
+
+5000 hôtes
+
+Un /24 est trop petit.  
+On lui donne donc souvent un /16.
+
+Mais cela laisse des dizaines de milliers d’adresses inutilisées.
+
+---
+
+## Pourquoi CIDR est utile
+
+CIDR permet de découper un grand réseau en **plus petits sous-réseaux**.
+
+Ces sous-réseaux sont appelés :
+
+**subnets**
+
+Le but est de mieux utiliser l’espace d’adressage IPv4.
+
+---
+
+## Subnetting
+
+Subnetting = diviser un réseau plus grand en plusieurs réseaux plus petits.
+
+Exemple :
+
+au lieu d’utiliser tout :
+
+203.0.113.0/24
+
+on peut utiliser seulement :
+
+203.0.113.0/30
+
+ou même :
+
+203.0.113.0/31
+
+selon le besoin.
+
+---
+
+## Nombre d’adresses utilisables
+
+Formule générale :
+
+2^(nombre de bits hôtes) - 2
+
+Le `-2` correspond à :
+
+- l’adresse réseau
+- l’adresse broadcast
+
+---
+
+## Exemple des préfixes
+
+### /24
+Masque :
+
+255.255.255.0
+
+Bits hôtes :
+
+8
+
+Calcul :
+
+2^8 - 2 = 254
+
+Adresses utilisables :
+
+254
+
+---
+
+### /25
+Masque :
+
+255.255.255.128
+
+Bits hôtes :
+
+7
+
+Calcul :
+
+2^7 - 2 = 126
+
+Adresses utilisables :
+
+126
+
+---
+
+### /26
+Masque :
+
+255.255.255.192
+
+Bits hôtes :
+
+6
+
+Calcul :
+
+2^6 - 2 = 62
+
+Adresses utilisables :
+
+62
+
+---
+
+### /27
+Masque :
+
+255.255.255.224
+
+Bits hôtes :
+
+5
+
+Calcul :
+
+2^5 - 2 = 30
+
+Adresses utilisables :
+
+30
+
+---
+
+### /28
+Masque :
+
+255.255.255.240
+
+Bits hôtes :
+
+4
+
+Calcul :
+
+2^4 - 2 = 14
+
+Adresses utilisables :
+
+14
+
+---
+
+### /29
+Masque :
+
+255.255.255.248
+
+Bits hôtes :
+
+3
+
+Calcul :
+
+2^3 - 2 = 6
+
+Adresses utilisables :
+
+6
+
+---
+
+### /30
+Masque :
+
+255.255.255.252
+
+Bits hôtes :
+
+2
+
+Calcul :
+
+2^2 - 2 = 2
+
+Adresses utilisables :
+
+2
+
+Pour un lien point-à-point, **/30 est parfaitement adapté**.
+
+---
+
+## Cas spécial du /31
+
+Masque :
+
+255.255.255.254
+
+Bits hôtes :
+
+1
+
+Formule classique :
+
+2^1 - 2 = 0
+
+Normalement, cela donnerait 0 adresse utilisable.
+
+Mais pour un **lien point-à-point**, un /31 peut être utilisé.
+
+Pourquoi ?
+
+Parce qu’un lien entre deux routeurs :
+
+- n’a pas besoin d’adresse réseau
+- n’a pas besoin d’adresse broadcast
+
+On peut donc utiliser les deux adresses disponibles pour les deux routeurs.
+
+Exemple :
+
+203.0.113.0/31
+
+Adresses :
+
+- 203.0.113.0
+- 203.0.113.1
+
+Les deux peuvent être assignées.
+
+---
+
+## Cas spécial du /32
+
+Masque :
+
+255.255.255.255
+
+Bits hôtes :
+
+0
+
+Il n’y a **aucun bit hôte**.
+
+Un /32 désigne **une seule adresse IP précise**.
+
+On n’utilise généralement pas /32 pour configurer un réseau classique.
+
+Mais /32 est utile pour :
+
+- désigner un hôte précis
+- certaines routes statiques
+- certaines routes locales
+
+---
+
+## Exemple concret de subnetting
+
+Réseau donné :
+
+192.168.1.0/24
+
+Besoin :
+
+4 sous-réseaux
+
+Chaque sous-réseau doit accueillir :
+
+45 hôtes
+
+Il faut aussi compter :
+
+- l’adresse réseau
+- l’adresse broadcast
+
+Donc besoin réel par sous-réseau :
+
+47 adresses
+
+---
+
+## Recherche du bon préfixe
+
+### /30
+2 adresses utilisables  
+→ insuffisant
+
+### /29
+6 adresses utilisables  
+→ insuffisant
+
+### /28
+14 adresses utilisables  
+→ insuffisant
+
+### /27
+30 adresses utilisables  
+→ insuffisant
+
+### /26
+62 adresses utilisables  
+→ suffisant
+
+Donc pour ce besoin :
+
+**/26 est le bon choix**
+
+---
+
+## Idée importante
+
+On ne peut pas toujours obtenir **exactement** le nombre d’adresses voulu.
+
+Parfois il reste un peu d’espace inutilisé.
+
+Ce n’est pas grave.
+
+Avoir un peu de marge peut être utile pour la croissance future du réseau.
+
+---
+
+## CIDR notation
+
+La notation :
+
+/25  
+/26  
+/27  
+etc.
+
+s’appelle :
+
+**CIDR notation**
+
+Avant CIDR, on utilisait surtout les masques en décimal pointé.
+
+Exemple :
+
+- /24 = 255.255.255.0
+- /25 = 255.255.255.128
+- /26 = 255.255.255.192
+- /27 = 255.255.255.224
+- /28 = 255.255.255.240
+- /29 = 255.255.255.248
+- /30 = 255.255.255.252
+- /31 = 255.255.255.254
+- /32 = 255.255.255.255
+
+---
+
+## Points importants à retenir
+
+- CIDR remplace l’ancien système de classes A, B et C.
+- Subnetting permet de découper un grand réseau en réseaux plus petits.
+- Le nombre d’adresses utilisables dépend du nombre de bits hôtes.
+- /30 est adapté aux liens point-à-point classiques.
+- /31 est aussi possible sur un vrai lien point-à-point.
+- /32 représente une seule adresse IP.
+- Le but du subnetting est d’utiliser l’espace IPv4 de manière plus efficace.
