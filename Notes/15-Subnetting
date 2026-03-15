@@ -1,0 +1,581 @@
+# 15-Subnetting (Part 3) – Notes
+
+## Fin de la série subnetting
+
+Cette partie termine la série sur le subnetting.
+
+Contenu principal :
+
+- correction du quiz précédent
+- subnetting sur réseaux de classe A
+- introduction au VLSM
+- ressources pour continuer à s’entraîner
+
+Le principe reste toujours le même :
+
+- déterminer combien de subnets il faut
+- déterminer combien d’hôtes il faut
+- choisir le bon préfixe
+
+---
+
+## Correction question 1
+
+Réseau donné :
+
+172.30.0.0/16
+
+Objectif :
+
+100 subnets  
+au moins 500 hosts par subnet
+
+### Nombre de subnets
+Il faut emprunter suffisamment de bits :
+
+- 6 bits → 64 subnets
+- 7 bits → 128 subnets
+
+Donc il faut emprunter :
+
+7 bits
+
+Le nouveau préfixe est :
+
+/23
+
+### Nombre d’hôtes
+Il reste :
+
+9 host bits
+
+Calcul :
+
+2^9 - 2 = 510
+
+Donc :
+
+/23 permet bien 100 subnets avec au moins 500 hosts
+
+Masque :
+
+255.255.254.0
+
+---
+
+## Correction question 2
+
+Hôte :
+
+172.21.111.201/20
+
+Objectif :
+
+trouver le subnet auquel il appartient
+
+Méthode :
+
+- écrire l’adresse
+- mettre tous les host bits à 0
+- reconvertir en décimal
+
+Résultat :
+
+172.21.96.0/20
+
+---
+
+## Correction question 3
+
+Adresse donnée :
+
+192.168.91.78/26
+
+Objectif :
+
+trouver le broadcast address
+
+Méthode :
+
+- écrire l’adresse
+- mettre tous les host bits à 1
+- reconvertir en décimal
+
+Résultat :
+
+192.168.91.127
+
+---
+
+## Correction question 4
+
+Réseau donné :
+
+172.16.0.0/16
+
+Objectif :
+
+le diviser en 4 subnets de taille égale  
+trouver le network address et le broadcast address du **deuxième subnet**
+
+### Nombre de subnets
+4 subnets = 2 bits empruntés
+
+Nouveau préfixe :
+
+/18
+
+### Deuxième subnet
+Network address :
+
+172.16.64.0
+
+Broadcast address :
+
+172.16.127.255
+
+---
+
+## Correction question 5
+
+Réseau donné :
+
+172.30.0.0/16
+
+Objectif :
+
+faire des subnets de 1000 hosts chacun  
+combien de subnets peut-on créer ?
+
+### Besoin en hosts
+Pour 1000 hosts :
+
+2^10 - 2 = 1022
+
+Donc il faut :
+
+10 host bits
+
+### Bits empruntés
+Sur un /16, si on garde 10 host bits, on peut emprunter :
+
+6 bits
+
+### Nombre de subnets
+2^6 = 64
+
+Résultat :
+
+64 subnets
+
+---
+
+## Subnetting sur classe A
+
+Le processus est exactement le même que pour :
+
+- classe C
+- classe B
+
+La différence :
+
+un réseau de classe A commence généralement en :
+
+/8
+
+Donc il y a beaucoup plus de bits disponibles.
+
+---
+
+## Exemple classe A
+
+Réseau donné :
+
+10.0.0.0/8
+
+Objectif :
+
+créer 2000 subnets
+
+### Nombre de subnets
+Il faut trouver :
+
+2^x ≥ 2000
+
+- 10 bits → 1024
+- 11 bits → 2048
+
+Donc il faut emprunter :
+
+11 bits
+
+Nouveau préfixe :
+
+/19
+
+### Nombre d’hôtes
+Bits hôtes restants :
+
+13
+
+Calcul :
+
+2^13 - 2 = 8190
+
+Résultat :
+
+- préfixe : /19
+- hosts utilisables par subnet : 8190
+
+---
+
+## Deuxième exemple classe A
+
+Hôte :
+
+10.217.182.223/11
+
+Objectif :
+
+identifier :
+
+1. network address  
+2. broadcast address  
+3. first usable address  
+4. last usable address  
+5. nombre d’hôtes utilisables
+
+### Résultats
+
+Network address :
+
+10.192.0.0
+
+Broadcast address :
+
+10.223.255.255
+
+First usable address :
+
+10.192.0.1
+
+Last usable address :
+
+10.223.255.254
+
+Nombre d’hôtes utilisables :
+
+2^21 - 2 = 2097150
+
+---
+
+## VLSM
+
+VLSM signifie :
+
+**Variable-Length Subnet Mask**
+
+Contrairement à FLSM :
+
+**Fixed-Length Subnet Mask**
+
+Avec FLSM :
+tous les subnets ont la même taille
+
+Avec VLSM :
+les subnets peuvent avoir **des tailles différentes**
+
+Le but est d’utiliser l’espace d’adressage plus efficacement.
+
+---
+
+## Exemple VLSM
+
+Réseau donné :
+
+192.168.1.0/24
+
+Besoins :
+
+- Tokyo LAN A : 110 hosts
+- Toronto LAN B : 45 hosts
+- Toronto LAN A : 29 hosts
+- Tokyo LAN B : 8 hosts
+- lien point-à-point : 2 hosts
+
+Si on utilisait FLSM, il n’y aurait pas assez d’espace.
+
+Avec VLSM, on attribue les subnets **du plus grand au plus petit**.
+
+---
+
+## Règle de base du VLSM
+
+Toujours commencer par :
+
+1. le plus grand subnet
+2. puis le deuxième plus grand
+3. puis continuer jusqu’au plus petit
+
+Pourquoi ?
+
+Parce que si on place les petits subnets d’abord, on risque de casser l’espace nécessaire pour les grands.
+
+---
+
+## VLSM – Tokyo LAN A
+
+Besoin :
+
+110 hosts
+
+Il faut un :
+
+/25
+
+Pourquoi ?
+
+- /25 → 126 hosts utilisables
+- /26 → 62 hosts utilisables, insuffisant
+
+### Résultats
+
+Network address :
+
+192.168.1.0/25
+
+Broadcast address :
+
+192.168.1.127
+
+First usable :
+
+192.168.1.1
+
+Last usable :
+
+192.168.1.126
+
+Hosts utilisables :
+
+126
+
+---
+
+## VLSM – Toronto LAN B
+
+Besoin :
+
+45 hosts
+
+Il faut un :
+
+/26
+
+Pourquoi ?
+
+- /26 → 62 hosts utilisables
+- /27 → 30 hosts utilisables, insuffisant
+
+Le prochain bloc commence juste après le broadcast précédent.
+
+### Résultats
+
+Network address :
+
+192.168.1.128/26
+
+Broadcast address :
+
+192.168.1.191
+
+First usable :
+
+192.168.1.129
+
+Last usable :
+
+192.168.1.190
+
+Hosts utilisables :
+
+62
+
+---
+
+## VLSM – Toronto LAN A
+
+Besoin :
+
+29 hosts
+
+Il faut un :
+
+/27
+
+Pourquoi ?
+
+- /27 → 30 hosts utilisables
+
+### Résultats
+
+Network address :
+
+192.168.1.192/27
+
+Broadcast address :
+
+192.168.1.223
+
+First usable :
+
+192.168.1.193
+
+Last usable :
+
+192.168.1.222
+
+Hosts utilisables :
+
+30
+
+---
+
+## VLSM – Tokyo LAN B
+
+Besoin :
+
+8 hosts
+
+Il faut un :
+
+/28
+
+Pourquoi ?
+
+- /28 → 14 hosts utilisables
+- /29 → 6 hosts utilisables, insuffisant
+
+### Résultats
+
+Network address :
+
+192.168.1.224/28
+
+Broadcast address :
+
+192.168.1.239
+
+First usable :
+
+192.168.1.225
+
+Last usable :
+
+192.168.1.238
+
+Hosts utilisables :
+
+14
+
+---
+
+## VLSM – Point-to-point link
+
+Besoin :
+
+2 hosts
+
+Pour le CCNA, on retient surtout :
+
+/30
+
+Pourquoi ?
+
+- /30 → 2 hosts utilisables
+
+Même si /31 peut fonctionner sur du point-to-point, pour les exercices CCNA il vaut mieux répondre /30 si on demande un subnet pour 2 hosts.
+
+### Résultats
+
+Network address :
+
+192.168.1.240/30
+
+Broadcast address :
+
+192.168.1.243
+
+First usable :
+
+192.168.1.241
+
+Last usable :
+
+192.168.1.242
+
+Hosts utilisables :
+
+2
+
+---
+
+## Résultat final du VLSM
+
+Subnets attribués :
+
+- 192.168.1.0/25
+- 192.168.1.128/26
+- 192.168.1.192/27
+- 192.168.1.224/28
+- 192.168.1.240/30
+
+Chaque subnet a une taille adaptée au besoin réel.
+
+C’est plus efficace que FLSM.
+
+---
+
+## Étapes VLSM à retenir
+
+### 1. Trier les besoins du plus grand au plus petit
+Toujours commencer par le subnet qui a besoin du plus grand nombre d’hôtes.
+
+### 2. Choisir le plus petit préfixe suffisant
+Ne pas prendre un subnet trop grand si un plus petit suffit.
+
+### 3. Placer le premier subnet au début de l’espace d’adressage
+Exemple :
+
+192.168.1.0/25
+
+### 4. Prendre l’adresse suivante après le broadcast
+Elle devient le network address du subnet suivant.
+
+### 5. Répéter jusqu’à ce que tous les subnets soient attribués
+
+---
+
+## Ressources pour s’entraîner
+
+Sites conseillés :
+
+- subnettingquestions.com
+- subnetting.org
+- subnettingpractice.com
+
+Objectif :
+
+faire au moins un exercice par jour pendant une semaine.
+
+---
+
+## Points importants à retenir
+
+- Le subnetting de classe A suit exactement la même logique que les classes B et C.
+- Plus on emprunte de bits, plus on crée de subnets.
+- Plus on garde de host bits, plus on a d’hôtes utilisables.
+- VLSM permet d’utiliser des subnets de tailles différentes.
+- En VLSM, il faut toujours attribuer les subnets du plus grand au plus petit.
+- VLSM permet d’économiser de l’espace d’adressage.
+- Pour le CCNA, un lien point-à-point à 2 hosts se traite généralement en /30.
