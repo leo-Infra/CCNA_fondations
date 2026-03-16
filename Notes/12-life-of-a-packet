@@ -2,322 +2,322 @@
 
 ## Overview
 
-Cette partie explique **le chemin complet d’un paquet lorsqu’il traverse plusieurs réseaux**.
+This part explains **the full path of a packet when it crosses multiple networks**.
 
-Exemple étudié :
+Example studied:
 
 PC1 → R1 → R2 → R4 → PC4
 
-PC1 est dans le réseau :
+PC1 is in the network:
 
 192.168.1.0/24
 
-PC4 est dans le réseau :
+PC4 is in the network:
 
 192.168.4.0/24
 
-Comme ces deux machines sont dans **des réseaux différents**, le paquet doit passer par plusieurs **routeurs**.
+Since these two machines are in **different networks**, the packet must pass through several **routers**.
 
-Chaque routeur prendra une décision en fonction de sa **routing table**.
+Each router will make a decision based on its **routing table**.
 
 ---
 
-## Vérification du réseau de destination
+## Verifying the destination network
 
-Quand PC1 veut envoyer un paquet à PC4 :
+When PC1 wants to send a package to PC4:
 
-Source IP :
+IP Source:
 
 192.168.1.1
 
-Destination IP :
+IP Destination:
 
 192.168.4.1
 
-PC1 compare la destination avec son réseau :
+PC1 compares the destination with its network:
 
 192.168.1.0/24
 
-Comme **192.168.4.1 n’appartient pas à ce réseau**, PC1 sait qu’il doit envoyer le paquet à son **default gateway**.
+Since **192.168.4.1 does not belong to this network**, PC1 knows that it must send the packet to its **default gateway**.
 
-Default gateway :
+Default gateway:
 
 192.168.1.254 (R1)
 
 ---
 
-## ARP pour trouver le MAC du gateway
+## ARP to find the gateway MAC
 
-PC1 connaît l'adresse IP du gateway mais **ne connaît pas son adresse MAC**.
+PC1 knows the IP address of the gateway but **does not know its MAC address**.
 
-Il utilise donc **ARP (Address Resolution Protocol)**.
+It therefore uses **ARP (Address Resolution Protocol)**.)
 
-PC1 envoie une **ARP Request** :
+PC1 sends **ARP Request**:
 
-Source IP  
-192.168.1.1  
+IP Source
+192.168.1.1
 
-Destination IP  
-192.168.1.254  
+IP Destination
+192,168,1,254
 
-Destination MAC  
+MAC Destination
 FFFF.FFFF.FFFF (broadcast)
 
-Cette requête est envoyée à **tous les appareils du réseau**.
+This request is sent to **all devices on the network**.
 
 ---
 
-## ARP Reply du routeur
+## router ARP Reply
 
-R1 reçoit la requête ARP.
+R 1 receives the request ARP.
 
-Comme l'adresse IP demandée correspond à la sienne, il répond avec une **ARP Reply**.
+Since the requested IP address matches his, he replies with an **ARP Reply**.
 
-Source IP  
-192.168.1.254  
+IP Source
+192,168,1,254
 
-Source MAC  
-AAAA  
+MAC Source
+YYYY
 
-Destination IP  
-192.168.1.1  
+IP Destination
+192.168.1.1
 
-Destination MAC  
-1111  
+MAC Destination
+1111
 
-PC1 connaît maintenant la **MAC address de son default gateway**.
-
----
-
-## Encapsulation Ethernet
-
-PC1 peut maintenant envoyer le paquet.
-
-Le paquet IP est encapsulé dans une **frame Ethernet**.
-
-Source MAC  
-1111  
-
-Destination MAC  
-AAAA  
-
-Important :
-
-Le **paquet IP ne change pas**.
-
-Source IP  
-192.168.1.1  
-
-Destination IP  
-192.168.4.1  
-
-Seule l'en-tête **Ethernet (Layer 2)** est modifiée.
+PC1 now knows the **MAC address of its default gateway**.
 
 ---
 
-## Décision de routage sur R1
+## Ethernet Encapsulation
 
-R1 reçoit la frame.
+PC1 can now send the package.
 
-Il :
+The IP packet is encapsulated in an **Ethernet frame**.
 
-1. retire l'en-tête Ethernet  
-2. lit l'adresse IP de destination  
-3. consulte sa routing table  
+MAC Source
+1111
 
-Commande utilisée :
+MAC Destination
+YYYY
+
+Important:
+
+The **IP packet does not change**.
+
+IP Source
+192.168.1.1
+
+IP Destination
+192.168.4.1
+
+Only the header **Ethernet (Layer 2)** is changed.
+
+---
+
+## Routing Decision on R1
+
+R1 receives the frame.
+
+It:
+
+1. Remove the Ethernet header
+2. reads the destination IP address
+3. consult its routing table
+
+Command used:
 
 show ip route
 
-R1 trouve une route vers :
+R1 finds a route to:
 
 192.168.4.0/24
 
-Next hop :
+Next hop:
 
 192.168.12.2 (R2)
 
-R1 doit donc envoyer le paquet à **R2**.
+R1 must therefore send the packet to **R2**.
 
 ---
 
-## ARP entre R1 et R2
+## ARP between R1 and R2
 
-R1 ne connaît pas la MAC address de R2.
+R1 does not know the MAC address of R2.
 
-Il envoie une **ARP Request** :
+It sends an **ARP Request**:
 
-Destination MAC  
-FFFF.FFFF.FFFF  
+MAC Destination
+FFFF.FFFF.FFFF
 
-Destination IP  
-192.168.12.2  
+IP Destination
+192.168.12.2
 
-R2 répond avec une **ARP Reply** :
+R2 responds with a **ARP Reply**:
 
-MAC address  
-CCCC  
+MAC address
+FCCC
 
-R1 connaît maintenant la MAC de R2.
-
----
-
-## Nouvelle encapsulation vers R2
-
-R1 encapsule à nouveau le paquet.
-
-Source MAC  
-BBBB  
-
-Destination MAC  
-CCCC  
-
-Encore une fois :
-
-Le **paquet IP reste identique**.
-
-Source IP  
-192.168.1.1  
-
-Destination IP  
-192.168.4.1  
+R1 now knows the MAC of R2.
 
 ---
 
-## Décision de routage sur R2
+## New encapsulation to R2
 
-R2 reçoit la frame.
+R1 encapsulates the packet again.
 
-Il :
+MAC Source
+BBBB
 
-1. retire l'en-tête Ethernet  
-2. consulte sa routing table  
+MAC Destination
+FCCC
 
-Il trouve une route vers :
+Again:
+
+The **IP packet remains the same**.
+
+IP Source
+192.168.1.1
+
+IP Destination
+192.168.4.1
+
+---
+
+## Routing Decision on R2
+
+R2 receives the frame.
+
+It:
+
+1. Remove the Ethernet header
+2. consult its routing table
+
+He finds a road to:
 
 192.168.4.0/24
 
-Next hop :
+Next hop:
 
 192.168.24.4 (R4)
 
-R2 doit donc envoyer le paquet à **R4**.
+R2 must therefore send the packet to **R4**.
 
 ---
 
-## ARP entre R2 et R4
+## ARP between R2 and R4
 
-R2 ne connaît pas la MAC address de R4.
+R2 does not know the MAC address of R4.
 
-Il envoie une **ARP Request** :
+It sends an **ARP Request**:
 
-Destination MAC  
-FFFF.FFFF.FFFF  
+MAC Destination
+FFFF.FFFF.FFFF
 
-Destination IP  
-192.168.24.4  
+IP Destination
+192.168.24.4
 
-R4 répond avec une **ARP Reply** :
+R4 responds with a **ARP Reply**:
 
-MAC address  
-EEEE  
+MAC address
+EEEE
 
-R2 peut maintenant envoyer le paquet à R4.
-
----
-
-## Transmission vers R4
-
-R2 encapsule le paquet.
-
-Source MAC  
-DDDD  
-
-Destination MAC  
-EEEE  
-
-Le paquet IP reste toujours :
-
-Source IP  
-192.168.1.1  
-
-Destination IP  
-192.168.4.1  
+R2 can now send the packet to R4.
 
 ---
 
-## R4 et réseau directement connecté
+## Transmission to R4
 
-R4 reçoit le paquet.
+R2 encapsulates the packet.
 
-Dans sa routing table :
+MAC Source
+DDDD
+
+MAC Destination
+EEEE
+
+The IP packet always remains:
+
+IP Source
+192.168.1.1
+
+IP Destination
+192.168.4.1
+
+---
+
+## R4 and directly connected network
+
+R4 receives the packet.
+
+In its routing table:
 
 192.168.4.0/24
 
-Ce réseau est **directement connecté**.
+This network is **directly connected**.
 
-Mais R4 ne connaît pas encore la MAC address de PC4.
-
----
-
-## ARP entre R4 et PC4
-
-R4 envoie une **ARP Request**.
-
-Destination MAC  
-FFFF.FFFF.FFFF  
-
-Destination IP  
-192.168.4.1  
-
-PC4 répond :
-
-MAC address  
-4444  
-
-R4 connaît maintenant la MAC address de PC4.
+But R4 does not yet know the MAC address of PC4.
 
 ---
 
-## Livraison finale
+## ARP between R4 and PC4
 
-R4 encapsule le paquet pour l'envoyer à PC4.
+R4 sends an **ARP Request**.
 
-Source MAC  
-FFFF  
+MAC Destination
+FFFF.FFFF.FFFF
 
-Destination MAC  
-4444  
+IP Destination
+192.168.4.1
 
-La frame est envoyée à PC4.
+PC4 replies:
 
-PC4 reçoit enfin le paquet.
+MAC address
+4444
 
----
-
-## Ce qu'il se passe pour la réponse
-
-Si PC4 répond à PC1 :
-
-Le processus sera **le même en sens inverse**.
-
-Cependant :
-
-Les appareils ont déjà appris les MAC addresses via ARP.
-
-Donc **il n'y aura plus de requêtes ARP**.
-
-Les paquets seront directement envoyés.
+R4 now knows PC4 MAC address.
 
 ---
 
-## Points importants à retenir
+## Final Delivery
 
-- Les **adresses IP restent identiques** pendant tout le trajet.
-- Les **adresses MAC changent à chaque saut (hop)**.
-- Chaque routeur fait :
-  - de-encapsulation
-  - consultation de la routing table
-  - re-encapsulation
-- Les switches **ne modifient pas les paquets**, ils transfèrent seulement les frames.
-- Le processus est appelé **hop-by-hop forwarding**.
+R4 encapsulates the packet to send it to PC4.
+
+MAC Source
+FFFF
+
+MAC Destination
+4444
+
+The frame is sent to PC4.
+
+PC4 finally receives the packet.
+
+---
+
+## What happens to the answer
+
+If PC4 responds to PC1:
+
+The process will be **the same in reverse**.
+
+However:
+
+Devices have already learned MAC addresses through ARP.
+
+So **there will be no more ARP requests**.
+
+Packages will be sent directly.
+
+---
+
+## Important takeaways
+
+- The **IP addresses remain the same** throughout the journey.
+- The **MAC addresses change with each hop (hop)**.)
+- Each router does:
+- de-encapsulation
+- consultation of the routing table
+- re-encapsulation
+- **switches do not modify packets**, they only transfer frames.
+- The process is called **hop-by-hop forwarding**.
