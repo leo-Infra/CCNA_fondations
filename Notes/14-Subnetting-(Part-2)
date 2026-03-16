@@ -1,171 +1,171 @@
 # 14-Subnetting (Part 2)
 
-## Suite du subnetting
+## Continuation of subnetting
 
-Cette partie continue l’apprentissage du subnetting avec :
+This part continues the learning of subnetting with:
 
-- des exercices sur les réseaux de classe C
-- l’introduction du subnetting sur les réseaux de classe B
-- une méthode plus claire pour résoudre les problèmes
+- exercises on class C networks
+- the introduction of subnetting on Class B networks
+- a clearer method to solve problems
 
-Le principe reste toujours le même :
+The principle remains the same:
 
-- déterminer le nombre de sous-réseaux nécessaires
-- déterminer le nombre d’hôtes nécessaires
-- choisir le bon préfixe
+- determine the number of subnets needed
+- determine the number of hosts needed
+- choose the right prefix
 
 ---
 
-## Correction de l’exercice précédent
+## Correction from previous fiscal year
 
-Réseau donné :
+Given network:
 
 192.168.1.0/24
 
-Objectif :
+Objective:
 
-Créer 4 sous-réseaux pouvant contenir 45 hôtes chacun.
+Create 4 subnets with 45 hosts each.
 
-Dans la partie précédente, on a vu que **/26** est le bon choix.
+In the previous section, we saw that **/26** is the right choice.
 
-Pourquoi ?
+Why?
 
-- /27 donne 30 hôtes utilisables
-- /26 donne 62 hôtes utilisables
+- /27 gives 30 usable hosts
+- /26 yields 62 usable hosts
 
-Donc il faut utiliser :
+So you have to use:
 
 192.168.1.0/26
 
 ---
 
-## Subnets en /26
+## Subnets in /26
 
 ### Subnet 1
-Network address :
+Network address:
 
 192.168.1.0/26
 
-Broadcast address :
+Broadcast address:
 
 192.168.1.63
 
-Range :
+Range:
 
-192.168.1.0 → 192.168.1.63
+192,168.1.0 → 192,168.1.63
 
 ---
 
 ### Subnet 2
-Network address :
+Network address:
 
 192.168.1.64/26
 
-Broadcast address :
+Broadcast address:
 
-192.168.1.127
+192,168,1,127
 
-Range :
+Range:
 
-192.168.1.64 → 192.168.1.127
+192,168.1.64 → 192,168.1,127
 
 ---
 
 ### Subnet 3
-Network address :
+Network address:
 
 192.168.1.128/26
 
-Broadcast address :
+Broadcast address:
 
-192.168.1.191
+192,168,1,191
 
-Range :
+Range:
 
-192.168.1.128 → 192.168.1.191
+192,168.1,128 → 192,168.1,191
 
 ---
 
 ### Subnet 4
-Network address :
+Network address:
 
 192.168.1.192/26
 
-Broadcast address :
+Broadcast address:
 
-192.168.1.255
+192,168,1,255
 
-Range :
+Range:
 
-192.168.1.192 → 192.168.1.255
+192,168.1,192 → 192,168.1,255
 
 ---
 
-## Astuce importante : incrémentation
+## Important Tip: Increment
 
-Pour aller plus vite, on peut utiliser **la valeur du dernier bit emprunté**.
+To go faster, you can use **the value of the last bit borrowed**.
 
-Dans un /26 :
+In a /26:
 
-- le masque est 255.255.255.192
-- le dernier bit du réseau dans le dernier octet vaut **64**
+- the mask is 255.255.255.192
+- the last bit of the network in the last byte is **64**
 
-Donc les sous-réseaux augmentent de :
+So the subnets increase by:
 
 64
 
-Exemple :
+Example:
 
-- 192.168.1.0
-- 192.168.1.64
-- 192.168.1.128
-- 192.168.1.192
+- 192 168 1.0
+- 192 168 1 64
+- 192 168 1 128
+- 192 168 1 192
 
-Cette valeur s’appelle souvent le **block size**.
+This value is often called the **block size**.
 
 ---
 
-## Exemple : créer 5 subnets de taille égale
+## Example: create 5 subnets of equal size
 
-Réseau donné :
+Given network:
 
 192.168.255.0/24
 
-Objectif :
+Objective:
 
-Créer 5 sous-réseaux de taille égale.
+Create 5 subnets of equal size.
 
 ---
 
-## Nombre de sous-réseaux
+## Number of subnets
 
-Formule :
+Formula:
 
-2^(bits empruntés)
+2^(borrowed bits)
 
-Si on emprunte :
+If you borrow:
 
 - 1 bit → 2 subnets
 - 2 bits → 4 subnets
 - 3 bits → 8 subnets
 
-Comme on a besoin de 5 subnets, 4 n’est pas suffisant.
+Since we need 5 subnets, 4 is not enough.
 
-Il faut donc emprunter 3 bits.
+It is therefore necessary to borrow 3 bits.
 
-Le nouveau préfixe est :
+The new prefix is:
 
 /27
 
 ---
 
-## Subnets en /27
+## Subnets in /27
 
-Un /27 donne un block size de :
+A /27 gives a block size of:
 
 32
 
-Les sous-réseaux sont donc :
+The subnets are therefore:
 
 - 192.168.255.0/27
 - 192.168.255.32/27
@@ -176,207 +176,207 @@ Les sous-réseaux sont donc :
 - 192.168.255.192/27
 - 192.168.255.224/27
 
-On en utilise 5, mais le /27 permet d’en créer 8.
+5 are used, but the /27 makes it possible to create 8.
 
 ---
 
-## Identifier le subnet d’un hôte
+## Identify the subnet of a host
 
-Exemple :
+Example:
 
-Quel subnet contient l’hôte :
+What subnet contains the host:
 
 192.168.5.57/27
 
-Méthode :
+Method:
 
-- identifier le préfixe
-- mettre tous les bits hôtes à 0
-- retrouver l’adresse réseau
+- identify the prefix
+- set all host bits to 0
+- find the network address
 
-Résultat :
+Result:
 
 192.168.5.32/27
 
-Donc :
+So:
 
-192.168.5.57 appartient au subnet :
+192.168.5.57 belongs to the subnet:
 
 192.168.5.32/27
 
 ---
 
-## Deuxième exemple
+## Second example
 
-Hôte :
+Host:
 
 192.168.29.219/29
 
-Résultat :
+Result:
 
 192.168.29.216/29
 
-Donc :
+So:
 
-192.168.29.219 appartient au subnet :
+192.168.29.219 belongs to the subnet:
 
 192.168.29.216/29
 
 ---
 
-## Tableau mental des Class C
+## Mental Table of Class C
 
-Pour les réseaux de classe C, il faut surtout connaître les patterns :
+For class C networks, it is necessary to know the patterns:
 
 ### /25
 - 2 subnets
-- 126 hôtes utilisables
-- block size : 128
+- 126 usable hosts
+- block size: 128
 
 ### /26
 - 4 subnets
-- 62 hôtes utilisables
-- block size : 64
+- 62 usable hosts
+- block size: 64
 
 ### /27
 - 8 subnets
-- 30 hôtes utilisables
-- block size : 32
+- 30 usable hosts
+- block size: 32
 
 ### /28
 - 16 subnets
-- 14 hôtes utilisables
-- block size : 16
+- 14 usable hosts
+- block size: 16
 
 ### /29
 - 32 subnets
-- 6 hôtes utilisables
-- block size : 8
+- 6 usable hosts
+- block size: 8
 
 ### /30
 - 64 subnets
-- 2 hôtes utilisables
-- block size : 4
+- 2 usable hosts
+- block size: 4
 
 ### /31
-- cas spécial point-to-point
+- special case point-to-point
 
 ### /32
-- une seule adresse IP
+- a single IP address
 
 ---
 
 ## Subnetting Class B
 
-Le processus est exactement le même.
+The process is exactly the same.
 
-La différence est qu’un réseau de classe B commence généralement avec :
+The difference is that a class B network usually starts with:
 
 /16
 
-Donc il y a plus de bits disponibles pour faire des sous-réseaux.
+So there are more bits available to make subnets.
 
 ---
 
-## Exemple 1 : 80 subnets
+## Example 1: 80 subnets
 
-Réseau donné :
+Given network:
 
 172.16.0.0/16
 
-Objectif :
+Objective:
 
-Créer 80 subnets.
+Create 80 subnets.
 
-On utilise :
+The following are used:
 
-2^(bits empruntés)
+2^(borrowed bits)
 
 - 6 bits → 64 subnets
 - 7 bits → 128 subnets
 
-Il faut donc emprunter 7 bits.
+It is therefore necessary to borrow 7 bits.
 
-Préfixe final :
+Final Prefix:
 
 /23
 
-Masque :
+Mask:
 
-255.255.254.0
+255,255,254.0
 
 ---
 
-## Exemple 2 : 500 subnets
+## Example 2: 500 subnets
 
-Réseau donné :
+Given network:
 
 172.22.0.0/16
 
-Objectif :
+Objective:
 
-Créer 500 subnets.
+Create 500 subnets.
 
 - 8 bits → 256 subnets
 - 9 bits → 512 subnets
 
-Il faut donc emprunter 9 bits.
+So you have to borrow 9 bits.
 
-Préfixe final :
+Final Prefix:
 
 /25
 
 ---
 
-## Exemple 3 : 250 subnets et 250 hosts par subnet
+Example 3: 250 subnets and 250 hosts per subnet
 
-Réseau donné :
+Given network:
 
 172.18.0.0/16
 
-Objectif :
+Objective:
 
 - 250 subnets
-- 250 hôtes par subnet
+- 250 hosts per subnet
 
-Pour les subnets :
+For grants:
 
-- 8 bits empruntés → 256 subnets
+- 8 bits borrowed → 256 subnets
 
-Pour les hosts :
+For hosts:
 
-- 8 bits hôtes restants → 254 hôtes utilisables
+- 8 bits remaining hosts → 254 usable hosts
 
-Donc le bon choix est :
+So the right choice is:
 
 /24
 
 ---
 
-## Identifier le subnet dans un Class B
+## Identify the subnet in a Class B
 
-Exemple :
+Example:
 
-Hôte :
+Host:
 
 172.25.217.192/21
 
-Méthode :
+Method:
 
-- écrire l’adresse
-- identifier les bits réseau / hôte
-- mettre les bits hôtes à 0
+- write the address
+- identify network/host bits
+- set host bits to 0
 
-Résultat :
+Result:
 
 172.25.216.0/21
 
 ---
 
-## Patterns à retenir
+## Patterns to remember
 
-### Nombre de subnets
-Chaque bit emprunté double le nombre de subnets :
+### Number of Subnets
+Each bit borrowed doubles the number of subnets:
 
 - 2
 - 4
@@ -387,52 +387,52 @@ Chaque bit emprunté double le nombre de subnets :
 - 128
 - etc.
 
-### Nombre d’hôtes
-Chaque bit hôte double le nombre d’adresses disponibles.
+### Number of hosts
+Each host bit doubles the number of available addresses.
 
-Formule :
+Formula:
 
-2^(bits hôtes) - 2
+2^(host bits) - 2
 
-Le `-2` correspond à :
+The '-2' corresponds to:
 
 - network address
 - broadcast address
 
 ---
 
-## Méthode simple de résolution
+## Simple resolution method
 
-Quand on te donne un exercice de subnetting :
+When you're given a subnetting exercise:
 
-### 1. Lire la demande
-Exemple :
-- combien de subnets ?
-- combien d’hôtes ?
+### 1. Read the request
+Example:
+- how many subnets?
+- how many guests?
 
-### 2. Calculer les subnets
-Utiliser :
+### 2. Calculate Subnets
+Use:
 
-2^(bits empruntés)
+2^(borrowed bits)
 
-### 3. Calculer les hosts
-Utiliser :
+### 3. Calculate hosts
+Use:
 
-2^(bits hôtes) - 2
+2^(host bits) - 2
 
-### 4. Choisir le plus petit préfixe qui fonctionne
-On prend toujours le plus petit subnet qui répond au besoin.
+### 4. Choose the smallest prefix that works
+We always take the smallest subnet that meets the need.
 
-### 5. Trouver les network addresses
-Avec le block size / incrémentation.
+### 5. Find network addresses
+With block size / incrementation.
 
 ---
 
-## Points importants à retenir
+## Important takeaways
 
-- Le subnetting sur classe B suit exactement la même logique que sur classe C.
-- Chaque bit emprunté double le nombre de subnets.
-- Chaque bit hôte double le nombre d’adresses.
-- Le block size permet de trouver rapidement les network addresses.
-- Pour identifier le subnet d’un host, il faut mettre les bits hôtes à 0.
-- Le plus important n’est pas de mémoriser tous les tableaux, mais de comprendre les patterns.
+- The subnetting on class B follows exactly the same logic as on class C.
+- Each bit borrowed doubles the number of subnets.
+- Each host bit doubles the number of addresses.
+- Block size allows you to quickly find network addresses.
+- To identify the subnet of a host, you must set the host bits to 0.
+- The most important thing is not to memorize all tables, but to understand patterns.
