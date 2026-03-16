@@ -2,490 +2,449 @@
 
 ## CIDR
 
-CIDR signifie **Classless Inter-Domain Routing**.
+CIDR stands for **Classless Inter-Domain Routing**.
 
-CIDR remplace l’ancien système de classes IPv4 :
+CIDR replaces the old IPv4 class system:
 
 - Class A
 - Class B
 - Class C
 
-Avec CIDR, on n’est plus obligé d’utiliser uniquement :
+With CIDR, we are no longer obliged to use only:
 
-- /8 pour class A
-- /16 pour class B
-- /24 pour class C
+- /8 for class A
+- /16 for class B
+- /24 for class C
 
-Cela permet de créer des réseaux **plus petits et plus adaptés au besoin réel**.
+This allows you to create networks that are **smaller and more adapted to the real need**.
 
 ---
 
-## Rappel sur les classes IPv4
+## Reminder on IPv4 classes
 
 ### Class A
-Premier octet :
+First byte:
 
-0 à 127
+0 to 127
 
-Préfixe par défaut :
+Default prefix:
 
 /8
 
-Cela donne :
+This gives:
 
-- peu de réseaux
-- énormément d’hôtes par réseau
+- few networks
+- huge number of hosts per network
 
 ---
 
 ### Class B
-Premier octet :
+First byte:
 
-128 à 191
+128 to 191
 
-Préfixe par défaut :
+Default prefix:
 
 /16
 
-Cela donne :
+This gives:
 
-- plus de réseaux que la classe A
-- moins d’hôtes par réseau
+- more networks than class A
+- fewer hosts per network
 
 ---
 
 ### Class C
-Premier octet :
+First byte:
 
-192 à 223
+192 to 223
 
-Préfixe par défaut :
+Default prefix:
 
 /24
 
-Cela donne :
+This gives:
 
-- beaucoup de réseaux
-- peu d’hôtes par réseau
+- many networks
+- few hosts per network
 
 ---
 
 ### Class D
-Premier octet :
+First byte:
 
-224 à 239
+224 to 239
 
-Utilisée pour des usages spéciaux.
+Used for special purposes.
 
 ---
 
 ### Class E
-Premier octet :
+First byte:
 
-240 à 255
+240 to 255
 
-Utilisée pour des usages spéciaux / réservés.
-
----
-
-## Problème du classful addressing
-
-L’ancien système attribuait des blocs trop grands.
-
-Exemple :
-
-Une petite entreprise qui a besoin d’environ 5000 adresses ne peut pas utiliser un réseau de classe C, car un /24 ne fournit pas assez d’adresses.
-
-Elle doit donc recevoir un réseau de classe B.
-
-Un /16 fournit environ :
-
-65536 adresses
-
-Résultat :
-
-énorme gaspillage d’adresses.
+Used for special / reserved uses.
 
 ---
 
-## Exemple de gaspillage
+## Problem with classful addressing
 
-### Cas 1 – Lien point-à-point
-Un réseau entre deux routeurs n’a besoin que de **2 adresses IP utilisables**.
+The old system assigned too large blocks.
 
-Si on utilise :
+Example:
+
+A small business that needs about 5000 addresses cannot use a class C network because a /24 does not provide enough addresses.
+
+It must therefore receive a class B network.
+
+A /16 provides approximately:
+
+65536 addresses
+
+Result:
+
+huge waste of addresses.
+
+---
+
+## Example of waste
+
+### Case 1 – Point-to-point link
+A network between two routers only needs **2 usable IP addresses**.
+
+If using:
 
 203.0.113.0/24
 
-Un /24 fournit :
+A /24 provides:
 
-256 adresses totales  
-254 adresses utilisables
+256 total addresses
+254 usable addresses
 
-Pour seulement 2 routeurs, cela gaspille presque tout le bloc.
-
----
-
-### Cas 2 – Entreprise
-Une entreprise a besoin de :
-
-5000 hôtes
-
-Un /24 est trop petit.  
-On lui donne donc souvent un /16.
-
-Mais cela laisse des dizaines de milliers d’adresses inutilisées.
+For only 2 routers, this wastes almost the entire block.
 
 ---
 
-## Pourquoi CIDR est utile
+### Case 2 – Company
+A business needs:
 
-CIDR permet de découper un grand réseau en **plus petits sous-réseaux**.
+5000 hosts
 
-Ces sous-réseaux sont appelés :
+A /24 is too small.
+It is therefore often given a /16.
 
-**subnets**
+But that leaves tens of thousands of addresses unused.
 
-Le but est de mieux utiliser l’espace d’adressage IPv4.
+---
+
+## Why CIDR is useful
+
+CIDR allows you to split a large network into **smaller subnets**.
+
+These subnets are called:
+
+**grants**
+
+The aim is to make better use of the IPv4 address space.
 
 ---
 
 ## Subnetting
 
-Subnetting = diviser un réseau plus grand en plusieurs réseaux plus petits.
+Subnetting = dividing a larger network into several smaller networks.
 
-Exemple :
+Example:
 
-au lieu d’utiliser tout :
+instead of using everything:
 
 203.0.113.0/24
 
-on peut utiliser seulement :
+you can only use
 
 203.0.113.0/30
 
-ou même :
+or even:
 
 203.0.113.0/31
 
-selon le besoin.
+as required.
 
 ---
 
-## Nombre d’adresses utilisables
+## Number of usable addresses
 
-Formule générale :
+General formula:
 
-2^(nombre de bits hôtes) - 2
+2^(number of host bits) - 2
 
-Le `-2` correspond à :
+The '-2' corresponds to:
 
-- l’adresse réseau
-- l’adresse broadcast
+- the network address
+- the broadcast address
 
 ---
 
-## Exemple des préfixes
+## Example of prefixes
 
 ### /24
-Masque :
+Mask:
 
-255.255.255.0
+255,255,255.0
 
-Bits hôtes :
+Host Bits:
 
 8
 
-Calcul :
+Calculation:
 
 2^8 - 2 = 254
 
-Adresses utilisables :
+Usable addresses:
 
 254
 
 ---
 
 ### /25
-Masque :
+Mask:
 
-255.255.255.128
+255 255 255 128
 
-Bits hôtes :
+Host Bits:
 
 7
 
-Calcul :
+Calculation:
 
 2^7 - 2 = 126
 
-Adresses utilisables :
+Usable addresses:
 
 126
 
 ---
 
 ### /26
-Masque :
+Mask:
 
-255.255.255.192
+255 255 255 192
 
-Bits hôtes :
+Host Bits:
 
 6
 
-Calcul :
+Calculation:
 
 2^6 - 2 = 62
 
-Adresses utilisables :
+Usable addresses:
 
 62
 
 ---
 
 ### /27
-Masque :
+Mask:
 
-255.255.255.224
+255 255 255 224
 
-Bits hôtes :
+Host Bits:
 
 5
 
-Calcul :
+Calculation:
 
 2^5 - 2 = 30
 
-Adresses utilisables :
+Usable addresses:
 
 30
 
 ---
 
 ### /28
-Masque :
+Mask:
 
-255.255.255.240
+255 255 255 240
 
-Bits hôtes :
+Host Bits:
 
 4
 
-Calcul :
+Calculation:
 
 2^4 - 2 = 14
 
-Adresses utilisables :
+Usable addresses:
 
 14
 
 ---
 
 ### /29
-Masque :
+Mask:
 
-255.255.255.248
+255,255,255,248
 
-Bits hôtes :
+Host Bits:
 
 3
 
-Calcul :
+Calculation:
 
 2^3 - 2 = 6
 
-Adresses utilisables :
+Usable addresses:
 
 6
 
 ---
 
 ### /30
-Masque :
+Mask:
 
-255.255.255.252
+255 255 255 252
 
-Bits hôtes :
+Host Bits:
 
 2
 
-Calcul :
+Calculation:
 
 2^2 - 2 = 2
 
-Adresses utilisables :
+Usable addresses:
 
 2
 
-Pour un lien point-à-point, **/30 est parfaitement adapté**.
+For a point-to-point link, **/30 is perfectly suited**.
 
 ---
 
-## Cas spécial du /31
+## Special case of /31
 
-Masque :
+Mask:
 
-255.255.255.254
+255,255,255,254
 
-Bits hôtes :
+Host Bits:
 
 1
 
-Formule classique :
+Classic formula:
 
 2^1 - 2 = 0
 
-Normalement, cela donnerait 0 adresse utilisable.
+Normally, this would give 0 usable address.
 
-Mais pour un **lien point-à-point**, un /31 peut être utilisé.
+But for a **point-to-point link**, a /31 can be used.
 
-Pourquoi ?
+Why?
 
-Parce qu’un lien entre deux routeurs :
+Because a link between two routers:
 
-- n’a pas besoin d’adresse réseau
-- n’a pas besoin d’adresse broadcast
+- does not need a network address
+- does not need a broadcast address
 
-On peut donc utiliser les deux adresses disponibles pour les deux routeurs.
+It is therefore possible to use the two addresses available for the two routers.
 
-Exemple :
+Example:
 
 203.0.113.0/31
 
-Adresses :
+Addresses
 
 - 203.0.113.0
 - 203.0.113.1
 
-Les deux peuvent être assignées.
+Both can be assigned.
 
 ---
 
-## Cas spécial du /32
+## Special case of /32
 
-Masque :
+Mask:
 
-255.255.255.255
+255 255 255 255
 
-Bits hôtes :
+Host Bits:
 
 0
 
-Il n’y a **aucun bit hôte**.
+There is **no host bit**.
 
-Un /32 désigne **une seule adresse IP précise**.
+A /32 denotes **a single precise IP address**.
 
-On n’utilise généralement pas /32 pour configurer un réseau classique.
+/32 is generally not used to configure a conventional network.
 
-Mais /32 est utile pour :
+But /32 is useful for:
 
-- désigner un hôte précis
-- certaines routes statiques
-- certaines routes locales
+- designate a specific host
+- some static roads
+- some local roads
 
 ---
 
-## Exemple concret de subnetting
+## Concrete example of subnetting
 
-Réseau donné :
+Given network:
 
 192.168.1.0/24
 
-Besoin :
+Need:
 
-4 sous-réseaux
+4 subnets
 
-Chaque sous-réseau doit accueillir :
+Each sub-network shall host:
 
-45 hôtes
+45 hosts
 
-Il faut aussi compter :
+It is also necessary to count:
 
-- l’adresse réseau
-- l’adresse broadcast
+- the network address
+- the broadcast address
 
-Donc besoin réel par sous-réseau :
+So real need per subnet:
 
-47 adresses
+47 addresses
 
 ---
 
-## Recherche du bon préfixe
+## Finding the right prefix
 
 ### /30
-2 adresses utilisables  
-→ insuffisant
+2 usable addresses
+→ insufficient
 
 ### /29
-6 adresses utilisables  
-→ insuffisant
+6 usable addresses
+→ insufficient
 
 ### /28
-14 adresses utilisables  
-→ insuffisant
+14 usable addresses
+→ insufficient
 
 ### /27
-30 adresses utilisables  
-→ insuffisant
+30 usable addresses
+→ insufficient
 
 ### /26
-62 adresses utilisables  
-→ suffisant
+62 usable addresses
+→ sufficient
 
-Donc pour ce besoin :
+So for this need:
 
-**/26 est le bon choix**
-
----
-
-## Idée importante
-
-On ne peut pas toujours obtenir **exactement** le nombre d’adresses voulu.
-
-Parfois il reste un peu d’espace inutilisé.
-
-Ce n’est pas grave.
-
-Avoir un peu de marge peut être utile pour la croissance future du réseau.
+**/26 is the right choice**
 
 ---
 
-## CIDR notation
+## Important idea
 
-La notation :
+You can't always get **exactly** the number of addresses you want.
 
-/25  
-/26  
-/27  
-etc.
+Sometimes there is a little unused space.
 
-s’appelle :
+It's okay.
 
-**CIDR notation**
-
-Avant CIDR, on utilisait surtout les masques en décimal pointé.
-
-Exemple :
-
-- /24 = 255.255.255.0
-- /25 = 255.255.255.128
-- /26 = 255.255.255.192
-- /27 = 255.255.255.224
-- /28 = 255.255.255.240
-- /29 = 255.255.255.248
-- /30 = 255.255.255.252
-- /31 = 255.255.255.254
-- /32 = 255.255.255.255
-
----
-
-## Points importants à retenir
-
-- CIDR remplace l’ancien système de classes A, B et C.
-- Subnetting permet de découper un grand réseau en réseaux plus petits.
-- Le nombre d’adresses utilisables dépend du nombre de bits hôtes.
-- /30 est adapté aux liens point-à-point classiques.
-- /31 est aussi possible sur un vrai lien point-à-point.
-- /32 représente une seule adresse IP.
-- Le but du subnetting est d’utiliser l’espace IPv4 de manière plus efficace.
+Having a little margin can be useful for future growth
