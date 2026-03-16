@@ -2,126 +2,126 @@
 
 ## Routing table
 
-Un routeur stocke les informations sur les destinations qu’il connaît dans une **routing table**.
+A router stores destination information it knows in a **routing table**.
 
-Quand un paquet arrive :
-1. Le routeur regarde l'adresse IP de destination.
-2. Il cherche une route correspondante dans la table.
-3. Il envoie le paquet vers la meilleure route disponible.
+When a package arrives:
+1. The router looks at the destination IP address.
+2. It looks for a corresponding route in the table.
+3. It sends the package to the best available route.
 
-Chaque entrée dans la routing table indique **où envoyer le paquet** pour atteindre un réseau.
+Each entry in the routing table indicates **where to send the packet** to reach a network.
 
 ---
 
-## Types de routes importantes
+## Important road types
 
 ### Connected route (C)
 
-Une **connected route** est automatiquement créée quand on configure une adresse IP sur une interface.
+A **connected route** is automatically created when an IP address is configured on an interface.
 
-Exemple :
+Example:
 
-Interface IP  
+IP interface
 192.168.1.1/24
 
-Route créée automatiquement :
+Automatically created route:
 
 192.168.1.0/24
 
-Cela signifie que le routeur est directement connecté à ce réseau.
+This means that the router is directly connected to this network.
 
-Si un paquet doit atteindre une machine de ce réseau, le routeur l'envoie directement via l'interface correspondante.
+If a packet is to reach a machine on this network, the router sends it directly via the corresponding interface.
 
 ---
 
 ### Local route (L)
 
-Une **local route** correspond à **l'adresse IP exacte du routeur**.
+A **local route** is the exact IP address of the router**.
 
-Exemple :
+Example:
 
-Interface IP  
+IP interface
 192.168.1.1/24
 
-Route locale :
+Local road:
 
 192.168.1.1/32
 
-Le masque `/32` signifie **une seule adresse IP**.
+The mask '/32' means **a single IP address**.
 
-Si un paquet est destiné à cette adresse, il est **reçu par le routeur lui-même**.
+If a packet is intended for this address, it is **received by the router itself**.
 
 ---
 
-## Correspondance d'une route
+## Correspondence of a route
 
-Une route correspond à un paquet si l'adresse IP de destination appartient au réseau de la route.
+A route is a packet if the destination IP address belongs to the route network.
 
-Exemple :
+Example:
 
-Route :
+Road:
 192.168.1.0/24
 
-Adresses correspondantes :
-192.168.1.10  
-192.168.1.60  
-192.168.1.200  
+Corresponding addresses:
+192.168.1.10
+192,168,1,60
+192,168,1,200
 
-Mais **192.168.0.10 ne correspond pas** à cette route.
+But **192.168.0.10 does not correspond** to this route.
 
 ---
 
-## Sélection de route
+## Route Selection
 
-Si plusieurs routes correspondent à une destination, le routeur choisit **la route la plus spécifique**.
+If several routes correspond to a destination, the router chooses **the most specific route**.
 
-La route la plus spécifique est celle avec **le prefix le plus long**.
+The most specific route is the one with **the longest prefix**.
 
-Exemple :
+Example:
 
-192.168.1.0/24  
+192.168.1.0/24
 192.168.1.1/32
 
-Si un paquet est destiné à :
+If a package is intended to:
 
 192.168.1.1
 
-Le routeur utilisera :
+The router will use:
 
 192.168.1.1/32
 
-car cette route correspond **exactement à l'adresse IP**.
+because this route corresponds **exactly to the IP address**.
 
 ---
 
-## Si aucune route ne correspond
+## If no route matches
 
-Si le routeur ne trouve aucune route correspondant à la destination :
+If the router cannot find a route to the destination:
 
-le paquet est **drop (supprimé)**.
+package is **drop (deleted)**.)
 
-Contrairement aux switches, les routeurs **ne floodent pas le réseau**.
+Unlike switches, routers **do not flood the network**.
 
 ---
 
-## Commande importante
+## Important order
 
-Pour afficher la routing table sur un routeur Cisco :
+To display the routing table on a Cisco router:
 
 show ip route
 
-Cette commande permet de voir :
+Use this command to see:
 
-- les réseaux connus
-- les routes connectées
-- les routes locales
-- les protocoles de routage utilisés
+- known networks
+- connected roads
+- local roads
+- the routing protocols used
 
 ---
 
-## Points importants à retenir
+## Important takeaways
 
-- Un routeur décide où envoyer un paquet grâce à la **routing table**.
-- Configurer une IP sur une interface crée automatiquement **une connected route et une local route**.
-- Le routeur choisit toujours **la route la plus spécifique**.
-- Sans route correspondante, le paquet est **supprimé**.
+- A router decides where to send a packet thanks to the **routing table**.
+- Configure an IP on an interface automatically creates **a connected route and a local route**.
+- The router always chooses **the most specific route**.
+- Without a corresponding route, the package is **deleted**.
