@@ -1,3 +1,4 @@
+```
 # 17-VLANs (Part 2) – Notes
 
 ## Overview
@@ -365,5 +366,5 @@ Trunks are used to transport multiple VLANs over a single link.
 
 Switches do not route between VLANs.  
 A router is still needed for inter-VLAN routing.
-
+```
 Router on a stick makes this routing more efficient by using subinterfaces instead of multiple physical router interfaces.
