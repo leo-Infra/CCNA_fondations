@@ -1,0 +1,369 @@
+# 17-VLANs (Part 2) – Notes
+
+## Overview
+
+This lesson continues VLAN fundamentals and introduces:
+
+- trunk ports
+- 802.1Q tagging
+- trunk configuration
+- router on a stick (ROAS)
+
+The goal is to understand how multiple VLANs can share a single physical link.
+
+---
+
+## Access port vs trunk port
+
+An access port:
+
+- belongs to one VLAN only
+- usually connects to end devices
+
+A trunk port:
+
+- carries traffic from multiple VLANs
+- is usually used between switches or between a switch and a router
+
+Access ports are untagged.  
+Trunk ports use VLAN tagging.
+
+---
+
+## Why trunk ports are needed
+
+If multiple VLANs exist across multiple switches, using one separate link per VLAN is inefficient.
+
+Problems:
+
+- wasted interfaces
+- poor scalability
+- routers may not have enough physical interfaces
+
+A trunk solves this by carrying traffic from several VLANs over one interface.
+
+---
+
+## VLAN tagging
+
+When traffic crosses a trunk link, the switch adds a VLAN tag to the frame.
+
+This allows the receiving device to know which VLAN the frame belongs to.
+
+Without tagging, the receiving switch would not know whether the frame belongs to VLAN 10, 20, 30, etc.
+
+---
+
+## 802.1Q
+
+802.1Q, often called dot1q, is the VLAN tagging standard used for trunks.
+
+Important points:
+
+- it is the industry standard
+- it inserts a 4-byte tag into the Ethernet frame
+- it is used to identify the VLAN of the frame
+
+ISL also exists, but it is old Cisco proprietary technology and is not important in practice for CCNA.
+
+---
+
+## 802.1Q tag fields
+
+The 802.1Q tag contains:
+
+### TPID
+Tag Protocol Identifier
+
+- 16 bits
+- always set to `0x8100`
+- identifies the frame as dot1q-tagged
+
+### TCI
+Tag Control Information
+
+It contains:
+
+- PCP
+- DEI
+- VID
+
+### PCP
+Priority Code Point
+
+- 3 bits
+- used for Class of Service
+
+### DEI
+Drop Eligible Indicator
+
+- 1 bit
+- indicates frames that can be dropped during congestion
+
+### VID
+VLAN ID
+
+- 12 bits
+- identifies the VLAN number
+
+Because VID is 12 bits:
+
+- total VLAN values = 4096
+- usable VLAN range = 1 to 4094
+
+---
+
+## VLAN ranges
+
+The VLAN range is divided into:
+
+### Normal VLANs
+1 to 1005
+
+### Extended VLANs
+1006 to 4094
+
+Modern switches usually support the full range.
+
+---
+
+## Native VLAN
+
+A trunk has a native VLAN.
+
+By default:
+
+- native VLAN = VLAN 1
+
+Frames in the native VLAN are sent untagged over the trunk.
+
+If a switch receives an untagged frame on a trunk, it assumes the frame belongs to the native VLAN.
+
+This means:
+
+- native VLAN must match on both ends of the trunk
+- otherwise traffic problems can happen
+
+This is called a native VLAN mismatch.
+
+---
+
+## Trunk configuration basics
+
+Main command to configure a trunk:
+
+```bash
+switchport mode trunk
+``` id="trunkcmd1"
+
+On some Cisco switches, this may fail if encapsulation is still set to auto.
+
+In that case, configure the encapsulation first:
+
+```bash
+switchport trunk encapsulation dot1q
+switchport mode trunk
+``` id="trunkcmd2"
+
+On switches that support only dot1q, this extra encapsulation command is not necessary.
+
+---
+
+## Show trunk interfaces
+
+Useful command:
+
+```bash
+show interfaces trunk
+``` id="showtrunk"
+
+This displays:
+
+- trunk interfaces
+- encapsulation type
+- trunk status
+- native VLAN
+- allowed VLANs
+- active VLANs on the switch
+
+---
+
+## Allowed VLANs on a trunk
+
+By default, all VLANs are allowed on a trunk.
+
+You can restrict VLANs for security and performance reasons.
+
+### Allow specific VLANs
+
+```bash
+switchport trunk allowed vlan 10,20,30
+``` id="allowvlan"
+
+### Add VLANs
+
+```bash
+switchport trunk allowed vlan add 20
+``` id="addvlan"
+
+### Remove VLANs
+
+```bash
+switchport trunk allowed vlan remove 20
+``` id="removevlan"
+
+### Allow all VLANs
+
+```bash
+switchport trunk allowed vlan all
+``` id="allvlan"
+
+### Allow all except some VLANs
+
+```bash
+switchport trunk allowed vlan except 1-5,10
+``` id="exceptvlan"
+
+### Allow no VLANs
+
+```bash
+switchport trunk allowed vlan none
+``` id="nonevlan"
+
+Restricting allowed VLANs helps avoid unnecessary traffic on the trunk.
+
+---
+
+## Changing the native VLAN
+
+Command:
+
+```bash
+switchport trunk native vlan 1001
+``` id="nativevlan"
+
+Best practice is often to change the native VLAN to an unused VLAN.
+
+Important:
+
+- native VLAN must match on both sides of the trunk
+
+---
+
+## show vlan brief
+
+Useful command:
+
+```bash
+show vlan brief
+``` id="showvlanbrief"
+
+This command shows:
+
+- VLAN IDs
+- VLAN names
+- access ports assigned to each VLAN
+
+It does not show trunk ports as members of VLANs.
+
+For trunks, use:
+
+```bash
+show interfaces trunk
+``` id="showtrunk2"
+
+---
+
+## Router on a stick (ROAS)
+
+Router on a stick is a method of inter-VLAN routing using:
+
+- one physical router interface
+- one trunk link to the switch
+- multiple router subinterfaces
+
+Instead of using one physical router interface per VLAN, ROAS uses subinterfaces.
+
+Example:
+
+- G0/0.10 for VLAN 10
+- G0/0.20 for VLAN 20
+- G0/0.30 for VLAN 30
+
+---
+
+## ROAS configuration
+
+First, enable the physical router interface:
+
+```bash
+interface g0/0
+no shutdown
+``` id="roas1"
+
+Then create subinterfaces:
+
+```bash
+interface g0/0.10
+encapsulation dot1q 10
+ip address 192.168.1.62 255.255.255.192
+``` id="roas2"
+
+```bash
+interface g0/0.20
+encapsulation dot1q 20
+ip address ...
+``` id="roas3"
+
+```bash
+interface g0/0.30
+encapsulation dot1q 30
+ip address ...
+``` id="roas4"
+
+Important points:
+
+- subinterface number should match VLAN number for clarity
+- `encapsulation dot1q X` tells the router which VLAN belongs to that subinterface
+- the switch side must already be configured as a trunk
+
+---
+
+## How ROAS works
+
+When a frame arrives on the router:
+
+- it arrives on the physical interface
+- the VLAN tag tells the router which subinterface should process it
+
+When the router sends a frame out:
+
+- it tags the frame according to the subinterface configuration
+
+This allows inter-VLAN routing over one physical link.
+
+---
+
+## Key concepts to remember
+
+- Access ports carry one VLAN only
+- Trunk ports carry multiple VLANs
+- Trunk traffic uses 802.1Q tags
+- The VID field identifies the VLAN
+- The native VLAN is sent untagged
+- Native VLAN must match on both sides
+- `show interfaces trunk` is the main verification command
+- ROAS allows inter-VLAN routing with one router interface and multiple subinterfaces
+
+---
+
+## Summary
+
+Trunks are used to transport multiple VLANs over a single link.
+
+802.1Q adds VLAN information to frames crossing trunk ports.
+
+Switches do not route between VLANs.  
+A router is still needed for inter-VLAN routing.
+
+Router on a stick makes this routing more efficient by using subinterfaces instead of multiple physical router interfaces.
