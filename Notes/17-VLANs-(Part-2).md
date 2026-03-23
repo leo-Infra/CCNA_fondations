@@ -1,4 +1,3 @@
-```
 # 17-VLANs (Part 2) – Notes
 
 ## Overview
@@ -153,18 +152,18 @@ This is called a native VLAN mismatch.
 
 Main command to configure a trunk:
 
-```bash
+
 switchport mode trunk
-``` id="trunkcmd1"
+ id="trunkcmd1" 
 
 On some Cisco switches, this may fail if encapsulation is still set to auto.
 
 In that case, configure the encapsulation first:
 
-```bash
+
 switchport trunk encapsulation dot1q
 switchport mode trunk
-``` id="trunkcmd2"
+id="trunkcmd2"
 
 On switches that support only dot1q, this extra encapsulation command is not necessary.
 
@@ -174,9 +173,9 @@ On switches that support only dot1q, this extra encapsulation command is not nec
 
 Useful command:
 
-```bash
+
 show interfaces trunk
-``` id="showtrunk"
+id="showtrunk"
 
 This displays:
 
@@ -197,39 +196,39 @@ You can restrict VLANs for security and performance reasons.
 
 ### Allow specific VLANs
 
-```bash
+
 switchport trunk allowed vlan 10,20,30
-``` id="allowvlan"
+id="allowvlan"
 
 ### Add VLANs
 
-```bash
+
 switchport trunk allowed vlan add 20
-``` id="addvlan"
+id="addvlan"
 
 ### Remove VLANs
 
-```bash
+
 switchport trunk allowed vlan remove 20
-``` id="removevlan"
+id="removevlan"
 
 ### Allow all VLANs
 
-```bash
+
 switchport trunk allowed vlan all
-``` id="allvlan"
+id="allvlan"
 
 ### Allow all except some VLANs
 
-```bash
+
 switchport trunk allowed vlan except 1-5,10
-``` id="exceptvlan"
+id="exceptvlan"
 
 ### Allow no VLANs
 
-```bash
+
 switchport trunk allowed vlan none
-``` id="nonevlan"
+id="nonevlan"
 
 Restricting allowed VLANs helps avoid unnecessary traffic on the trunk.
 
@@ -239,9 +238,9 @@ Restricting allowed VLANs helps avoid unnecessary traffic on the trunk.
 
 Command:
 
-```bash
+
 switchport trunk native vlan 1001
-``` id="nativevlan"
+id="nativevlan"
 
 Best practice is often to change the native VLAN to an unused VLAN.
 
@@ -255,9 +254,9 @@ Important:
 
 Useful command:
 
-```bash
+
 show vlan brief
-``` id="showvlanbrief"
+id="showvlanbrief"
 
 This command shows:
 
@@ -269,9 +268,9 @@ It does not show trunk ports as members of VLANs.
 
 For trunks, use:
 
-```bash
+
 show interfaces trunk
-``` id="showtrunk2"
+id="showtrunk2"
 
 ---
 
@@ -297,30 +296,29 @@ Example:
 
 First, enable the physical router interface:
 
-```bash
+
 interface g0/0
 no shutdown
-``` id="roas1"
+id="roas1"
 
 Then create subinterfaces:
 
-```bash
+
 interface g0/0.10
 encapsulation dot1q 10
 ip address 192.168.1.62 255.255.255.192
-``` id="roas2"
+id="roas2"
 
-```bash
+
 interface g0/0.20
 encapsulation dot1q 20
 ip address ...
-``` id="roas3"
+id="roas3"
 
-```bash
 interface g0/0.30
 encapsulation dot1q 30
 ip address ...
-``` id="roas4"
+id="roas4"
 
 Important points:
 
@@ -366,5 +364,4 @@ Trunks are used to transport multiple VLANs over a single link.
 
 Switches do not route between VLANs.  
 A router is still needed for inter-VLAN routing.
-```
 Router on a stick makes this routing more efficient by using subinterfaces instead of multiple physical router interfaces.
