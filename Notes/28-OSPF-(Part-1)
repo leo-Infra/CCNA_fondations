@@ -1,0 +1,633 @@
+# 28-OSPF Part 1 – Basics and Single-Area Fundamentals
+
+## Overview
+
+This lesson introduces OSPF, the main dynamic routing protocol you need for the CCNA.
+
+OSPF stands for Open Shortest Path First.
+
+It is the only dynamic routing protocol explicitly named in the CCNA exam topics, so it matters much more than RIP and EIGRP.
+
+This first lesson is a high-level introduction. It focuses on:
+
+- basic OSPF operation
+- OSPF areas
+- basic OSPF configuration
+- core terminology you must recognize before going deeper
+
+---
+
+## OSPF Position in Routing Protocols
+
+OSPF is a:
+
+- dynamic routing protocol
+- IGP (Interior Gateway Protocol)
+- link-state protocol
+
+That means it works differently from RIP and EIGRP.
+
+### Reminder: Distance Vector vs Link State
+
+#### Distance Vector
+Examples:
+
+- RIP
+- EIGRP
+
+Behavior:
+
+- routers learn routes from neighbors
+- routers do not have a full map of the network
+- routers rely on what neighbors tell them
+
+This is often described as "routing by rumor".
+
+---
+
+#### Link State
+Examples:
+
+- OSPF
+- IS-IS
+
+Behavior:
+
+- routers build a map of the network
+- routers exchange topology information
+- each router calculates the best path itself
+
+This gives better decisions and faster reaction to changes, but requires more CPU and memory.
+
+---
+
+## OSPF Versions
+
+There are 3 versions of OSPF:
+
+- OSPFv1: old, not used
+- OSPFv2: mainly for IPv4
+- OSPFv3: mainly for IPv6, can also support IPv4
+
+For CCNA, the important one is:
+
+- OSPFv2
+
+That is the version referenced in the exam topics.
+
+---
+
+## OSPF Core Algorithm
+
+OSPF uses the SPF algorithm:
+
+- Shortest Path First
+
+Another name:
+
+- Dijkstra’s algorithm
+
+This is a very important name to remember.
+
+OSPF uses this algorithm to calculate the best path to each destination after building its topology database.
+
+---
+
+## How OSPF Works at a High Level
+
+OSPF works in 3 major stages:
+
+1. Become neighbors with directly connected OSPF routers
+2. Exchange LSAs and build the LSDB
+3. Run the SPF algorithm to calculate best routes
+
+---
+
+## Important OSPF Terms
+
+### LSA
+LSA = Link State Advertisement
+
+An LSA is a piece of OSPF information that describes part of the network.
+
+Examples of information carried in LSAs:
+
+- router ID
+- connected networks
+- interface costs
+- topology information
+
+Routers generate LSAs and flood them through the OSPF area.
+
+---
+
+### LSDB
+LSDB = Link State Database
+
+This is the database where routers store LSAs.
+
+Key idea:
+
+- all routers in the same OSPF area should have the same LSDB
+
+That shared database is what lets every router calculate the network the same way.
+
+---
+
+### Flooding
+Flooding means:
+
+- sending LSAs to all OSPF neighbors so the information spreads through the area
+
+This is how all routers end up with the same LSDB.
+
+---
+
+## Example OSPF Logic
+
+If R4 activates OSPF on a new interface and adds a new subnet:
+
+- R4 creates an LSA describing that link
+- R4 sends it to its neighbors
+- neighbors flood it onward
+- all routers in the area learn about it
+- all routers update their LSDB
+- all routers run SPF again
+- all routers recalculate best routes
+
+This is one of the main strengths of OSPF.
+
+---
+
+## OSPF Metric
+
+OSPF uses a metric called:
+
+- cost
+
+Lower cost = better route
+
+You will study cost in more detail later, but for now:
+
+- OSPF chooses the path with the lowest total cost
+
+---
+
+## OSPF Areas
+
+Areas are one of the most important OSPF concepts.
+
+OSPF can divide a larger network into smaller logical sections called areas.
+
+### Why areas exist
+
+In small networks, one area is fine.
+
+In large networks, one huge OSPF area creates problems:
+
+- larger LSDB
+- more CPU use during SPF calculations
+- more memory use
+- more flooding when topology changes
+- slower overall behavior
+
+So OSPF uses areas to scale.
+
+---
+
+## Single-Area OSPF
+
+For the CCNA, you only need to configure:
+
+- single-area OSPF
+
+Usually that means:
+
+- area 0
+
+In small networks, using one area is normal and efficient.
+
+---
+
+## OSPF Backbone Area
+
+Area 0 is special.
+
+It is called:
+
+- the backbone area
+
+Important rule:
+
+- all other OSPF areas must connect to area 0
+
+If an area does not connect to area 0 properly, OSPF design is broken.
+
+---
+
+## OSPF Area Rules
+
+### Rule 1: Areas should be contiguous
+
+A single OSPF area must stay connected.
+
+Bad design:
+
+- one area split into disconnected pieces
+
+Good design:
+
+- if a section is separated, make it another area
+
+---
+
+### Rule 2: Non-backbone areas must connect to area 0 through an ABR
+
+Every area outside area 0 must have at least one Area Border Router connected to area 0.
+
+---
+
+### Rule 3: Interfaces in the same subnet must be in the same OSPF area
+
+If two routers are on the same subnet but configured in different OSPF areas:
+
+- they will not become OSPF neighbors
+
+This is a very common source of configuration problems.
+
+---
+
+## OSPF Router Types
+
+### Internal Router
+
+A router with all interfaces in the same OSPF area.
+
+Example:
+
+- all interfaces in area 1
+
+Then that router is an internal router for area 1.
+
+---
+
+### ABR
+ABR = Area Border Router
+
+A router with interfaces in multiple OSPF areas.
+
+Example:
+
+- one interface in area 0
+- one interface in area 1
+
+That router is an ABR.
+
+Important note:
+
+- an ABR keeps a separate LSDB for each area it connects to
+- best practice is usually no more than 2 areas per ABR
+
+---
+
+### Backbone Router
+
+A router with at least one interface in area 0.
+
+That includes:
+
+- internal routers in area 0
+- ABRs connected to area 0
+
+---
+
+### ASBR
+ASBR = Autonomous System Boundary Router
+
+A router that connects the OSPF domain to an external network.
+
+Typical example:
+
+- a router connected to the Internet
+- advertising a default route into OSPF
+
+---
+
+## Route Types in OSPF
+
+### Intra-Area Route
+
+A route to a destination inside the same OSPF area.
+
+Example:
+
+- router in area 1 learning a network also in area 1
+
+---
+
+### Interarea Route
+
+A route to a destination in a different OSPF area.
+
+Example:
+
+- router in area 1 learning a network in area 2
+
+---
+
+## Basic OSPF Configuration
+
+### Enter OSPF Process
+
+```bash
+router ospf 1
+```
+
+The number is the process ID.
+
+Important points:
+
+- process ID is locally significant
+- neighbors do not need to use the same process ID
+- process ID is not the area number
+
+This is different from EIGRP, where the AS number must match.
+
+---
+
+## OSPF `network` Command
+
+Example:
+
+```bash
+network 10.0.12.0 0.0.0.15 area 0
+```
+
+OSPF uses wildcard masks, just like EIGRP.
+
+Purpose of the command:
+
+- match interfaces whose IP addresses fall in that range
+- activate OSPF on those interfaces
+- place those interfaces in the specified area
+
+Important:
+
+- the area is mandatory in OSPF
+- unlike EIGRP/RIP, the command is incomplete without the area
+
+---
+
+## What the OSPF Network Command Really Does
+
+The command does **not** directly say:
+
+- advertise this exact prefix
+
+Instead it says:
+
+- look for interfaces matching this range
+- enable OSPF there
+- assign the interface to that area
+- begin neighbor discovery on that interface
+
+Then the router will advertise the connected subnet through LSAs.
+
+---
+
+## OSPF Passive Interface
+
+Same idea as in RIP and EIGRP:
+
+```bash
+passive-interface g2/0
+```
+
+Purpose:
+
+- stop sending OSPF hello packets out that interface
+- still advertise the connected subnet into OSPF
+
+Use it on interfaces where:
+
+- OSPF should advertise the subnet
+- but no OSPF neighbors exist on that segment
+
+Good example:
+
+- LAN interface connected only to hosts
+
+---
+
+## OSPF Default Route Advertisement
+
+If the router already has a default route and you want to inject it into OSPF:
+
+```bash
+default-information originate
+```
+
+This causes the router to advertise the default route to OSPF neighbors.
+
+That usually makes the router an:
+
+- ASBR
+
+Because it is now connecting the OSPF domain to an external path.
+
+---
+
+## OSPF Router ID
+
+OSPF uses a router ID, just like EIGRP.
+
+Router ID selection order:
+
+1. manually configured router ID
+2. highest IP on a loopback interface
+3. highest IP on a physical interface
+
+Example manual configuration:
+
+```bash
+router-id 1.1.1.1
+```
+
+Important:
+
+- in OSPF, the command is `router-id`
+- in EIGRP, it was `eigrp router-id`
+
+---
+
+## Applying a New Router ID
+
+If you manually configure a new OSPF router ID, it does not always take effect immediately.
+
+You may need to reset the OSPF process:
+
+```bash
+clear ip ospf process
+```
+
+Warning:
+
+- this resets OSPF on the router
+- neighbors drop temporarily
+- routes are lost briefly
+- safe in lab, risky in production
+
+---
+
+## OSPF Verification Commands
+
+### `show ip protocols`
+
+Useful information shown:
+
+- protocol running
+- process ID
+- router ID
+- passive interfaces
+- OSPF neighbors
+- configured networks
+- maximum paths
+- administrative distance
+
+---
+
+### `show ip route`
+
+Used to see OSPF routes in the routing table.
+
+OSPF routes appear with code:
+
+- `O`
+
+Default route learned through OSPF also appears there if successfully advertised.
+
+---
+
+## OSPF Maximum Paths
+
+Like RIP and EIGRP, OSPF supports ECMP.
+
+Default:
+
+- up to 4 equal-cost paths
+
+Can be changed with:
+
+```bash
+maximum-paths 8
+```
+
+This only affects equal-cost routes, not unequal-cost balancing.
+
+---
+
+## OSPF Administrative Distance
+
+Default OSPF AD:
+
+- 110
+
+Can be changed with:
+
+```bash
+distance 85
+```
+
+This changes route preference relative to other protocols on that router.
+
+---
+
+## OSPF and ASBR
+
+If a router injects a default route into OSPF, it becomes an ASBR.
+
+Example situation:
+
+- router connected to Internet
+- has a static default route
+- uses `default-information originate`
+
+Result:
+
+- OSPF neighbors learn the default route
+- router is now acting as an Autonomous System Boundary Router
+
+---
+
+## Things to Remember About OSPF Configuration
+
+### Similar to RIP/EIGRP
+- `passive-interface`
+- `maximum-paths`
+- `distance`
+- dynamic routing process mode
+- router ID concept
+
+### Different from RIP/EIGRP
+- process ID is local only
+- `network` command requires area
+- OSPF uses LSAs and LSDB
+- areas are a core design concept
+
+---
+
+## Key Exam-Level Facts
+
+- OSPF is a link-state IGP
+- OSPF uses Dijkstra’s SPF algorithm
+- OSPFv2 is the important IPv4 version for CCNA
+- area 0 is the backbone area
+- all non-backbone areas must connect to area 0
+- interfaces in the same subnet must be in the same OSPF area
+- process IDs do not need to match between neighbors
+- OSPF network commands require an area
+- `default-information originate` advertises a default route
+- router ID priority: manual > loopback > physical
+- OSPF route code = `O`
+- OSPF AD = 110
+
+---
+
+## Mental Model
+
+Think of OSPF like this:
+
+- routers become neighbors
+- routers exchange topology information, not just routes
+- all routers in an area build the same map
+- each router calculates the best paths itself
+
+That is the key difference from distance-vector protocols.
+
+---
+
+## Final Summary
+
+This first OSPF lesson builds the foundation.
+
+You should now understand:
+
+- what OSPF is
+- why it is link-state
+- what LSAs and LSDB mean
+- what OSPF areas are
+- why area 0 matters
+- what ABR and ASBR mean
+- how basic OSPF configuration works
+- how router ID works
+- how default routes can be injected into OSPF
+
+The next step is to go deeper into:
+
+- hello packets
+- neighbor formation
+- adjacency behavior
+- OSPF packet exchange
+- SPF calculations
+- network types
+- cost and route selection
