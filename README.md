@@ -52,8 +52,8 @@ L’objectif est de comprendre réellement les mécanismes réseau, de savoir di
 - [x] Configuration IP statique  
 - [x] Test de connectivité ICMP (ping)  
 - [x] Diagnostic d’un masque incorrect  
-- [ ] VLAN  
-- [ ] Routage statique  
+- [x] VLAN  
+- [x] Routage statique  
 - [ ] DHCP  
 - [ ] Analyse de trames avec Wireshark  
 
