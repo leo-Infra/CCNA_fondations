@@ -1,0 +1,696 @@
+# 27-RIP and EIGRP – Notes
+
+## Overview
+
+This lesson gives a practical overview of two dynamic routing protocols:
+
+- RIP
+- EIGRP
+
+Even if they are not the main focus of the CCNA, they are still useful because:
+
+- they can appear in comparison questions
+- they help you understand OSPF more easily
+- they reinforce core routing ideas such as metrics, advertisements, router IDs, passive interfaces, and administrative distance
+
+This lesson is not about mastering every detail of RIP and EIGRP.  
+It is about understanding how they work, what makes them different, and what Cisco expects you to recognize.
+
+---
+
+## RIP Overview
+
+RIP = Routing Information Protocol
+
+Main characteristics:
+
+- industry standard protocol
+- distance vector IGP
+- uses routing-by-rumor logic
+- metric = hop count
+- very simple to configure
+- mostly obsolete in real production networks
+
+---
+
+## RIP Key Facts
+
+- Distance vector protocol
+- Interior Gateway Protocol
+- Metric = hop count
+- Maximum hop count = 15
+- 16 hops = unreachable
+- Best for very small networks or lab environments
+- Poor choice for modern enterprise networks
+
+---
+
+## Why RIP is limited
+
+RIP counts only routers in the path.
+
+Example:
+
+- path through a 10 Mbps link = 1 hop
+- path through a 10 Gbps link = 1 hop
+
+So RIP ignores bandwidth.
+
+This means RIP can choose bad paths because it only cares about hop count, not speed.
+
+---
+
+## RIP Versions
+
+### RIPv1
+
+- old version
+- classful only
+- no subnet mask in advertisements
+- does not support VLSM or CIDR
+- uses broadcast: `255.255.255.255`
+
+Not suitable for modern networks.
+
+---
+
+### RIPv2
+
+- modern RIP for IPv4
+- supports VLSM and CIDR
+- includes subnet mask in advertisements
+- uses multicast: `224.0.0.9`
+
+Always prefer RIPv2 if RIP is used.
+
+---
+
+### RIPng
+
+- RIP for IPv6
+- not covered here
+
+---
+
+## RIP Message Types
+
+RIP uses two message types:
+
+### Request
+- asks neighbor to send its routing table
+
+### Response
+- sends routing table information to neighbors
+
+---
+
+## RIP Update Behavior
+
+By default, RIP sends routing updates every 30 seconds.
+
+This is simple, but inefficient in larger networks because:
+
+- updates happen regularly even if nothing changes
+- extra traffic is generated
+- scalability is poor
+
+---
+
+## RIP Configuration Basics
+
+Enter RIP process:
+
+```bash
+router rip
+```
+
+Use version 2:
+
+```bash
+version 2
+```
+
+Disable classful summarization:
+
+```bash
+no auto-summary
+```
+
+This is very important.
+
+If auto-summary is enabled, RIP may advertise classful networks instead of the actual subnet.
+
+---
+
+## RIP `network` Command Behavior
+
+Example:
+
+```bash
+network 10.0.0.0
+```
+
+Important idea:
+
+The RIP `network` command does **not** directly tell RIP which exact prefixes to advertise.
+
+Instead, it tells the router:
+
+- look for interfaces whose IP addresses fall in this classful range
+- enable RIP on those interfaces
+- form neighbor relationships there
+- advertise the actual connected subnet on those interfaces
+
+So the command is classful, but the actual advertised subnet in RIPv2 can still be subnetted correctly if `version 2` and `no auto-summary` are used.
+
+---
+
+## Example of RIP Network Activation
+
+If router interfaces are:
+
+- 10.0.12.1/30
+- 10.0.13.1/30
+
+Then:
+
+```bash
+network 10.0.0.0
+```
+
+matches both interfaces, because both are in the class A range starting with 10.
+
+RIP is activated on both interfaces.
+
+The router then advertises:
+
+- 10.0.12.0/30
+- 10.0.13.0/30
+
+Not `10.0.0.0/8`.
+
+That distinction is important.
+
+---
+
+## Passive Interface in RIP
+
+Command:
+
+```bash
+passive-interface g2/0
+```
+
+Purpose:
+
+- stop sending RIP advertisements out that interface
+- still advertise that connected network to RIP neighbors on other interfaces
+
+Use case:
+
+- interface connected to a LAN with hosts but no RIP neighbors
+
+Best practice:
+
+- make interfaces passive if there is no routing neighbor on them
+
+---
+
+## Advertising a Default Route in RIP
+
+If the router already has a default route and you want to advertise it into RIP:
+
+```bash
+default-information originate
+```
+
+This tells RIP neighbors:
+
+- use me as the path to the default route
+
+This is useful for sharing Internet access information.
+
+---
+
+## RIP Verification Command
+
+Main command:
+
+```bash
+show ip protocols
+```
+
+Useful information shown:
+
+- protocol running
+- RIP version
+- auto-summary status
+- maximum paths
+- configured networks
+- passive interfaces
+- routing neighbors
+- administrative distance
+
+---
+
+## RIP Maximum Paths
+
+By default, RIP supports ECMP over 4 equal-cost routes.
+
+Can be changed with:
+
+```bash
+maximum-paths NUMBER
+```
+
+This is the same style of idea used in other routing protocols too.
+
+---
+
+## RIP Administrative Distance
+
+Default AD of RIP:
+
+- 120
+
+This is relatively high, meaning RIP is less preferred than protocols like EIGRP or OSPF.
+
+---
+
+## RIP in Routing Table
+
+RIP routes appear with code:
+
+- `R`
+
+Example logic:
+
+- if multiple RIP routes to the same destination have the same hop count
+- both can be installed
+- traffic is load-balanced with ECMP
+
+---
+
+# EIGRP Overview
+
+EIGRP = Enhanced Interior Gateway Routing Protocol
+
+Main characteristics:
+
+- advanced distance vector / hybrid protocol
+- originally Cisco proprietary
+- now partially opened, but still mostly considered Cisco-focused in practice
+- faster and more scalable than RIP
+- supports very large networks
+- supports unequal-cost load balancing
+- multicasts to `224.0.0.10`
+
+---
+
+## EIGRP Key Facts
+
+- IGP
+- advanced distance vector protocol
+- metric based on bandwidth and delay by default
+- much faster than RIP
+- no 15-hop limitation
+- good protocol technically, but less common than OSPF in mixed-vendor environments
+
+---
+
+## Why EIGRP Is Considered Better than RIP
+
+Compared to RIP, EIGRP:
+
+- converges faster
+- uses a smarter metric
+- supports larger networks
+- can load balance even across unequal-cost paths
+- is more efficient overall
+
+---
+
+## EIGRP Metric
+
+Default metric uses:
+
+- bandwidth
+- delay
+
+Important detail:
+
+- bandwidth of the slowest link is used
+- delays of all links are summed
+
+This makes EIGRP more realistic than RIP.
+
+---
+
+## EIGRP Unequal-Cost Load Balancing
+
+Unique feature:
+
+- EIGRP can load balance over routes that do not have the same metric
+
+This is something RIP and OSPF do not do by default.
+
+EIGRP can even send more traffic on better paths and less on worse paths.
+
+That makes it very flexible.
+
+---
+
+## EIGRP Multicast Address
+
+EIGRP sends messages to:
+
+- `224.0.0.10`
+
+Remember:
+
+- RIPv2 = `224.0.0.9`
+- EIGRP = `224.0.0.10`
+
+---
+
+## Basic EIGRP Configuration
+
+Enter EIGRP process:
+
+```bash
+router eigrp 1
+```
+
+The number is the autonomous system number.
+
+Important:
+
+- neighbors must use the same EIGRP AS number
+- otherwise they will not become neighbors
+
+---
+
+## EIGRP Auto-Summary
+
+Disable it with:
+
+```bash
+no auto-summary
+```
+
+Reason:
+
+- classful summarization is not acceptable in modern networks
+- same general logic as RIP
+
+Depending on software version, auto-summary may already be off, but you should still understand the concept.
+
+---
+
+## EIGRP Passive Interface
+
+Same idea as RIP:
+
+```bash
+passive-interface g2/0
+```
+
+Purpose:
+
+- stop sending EIGRP hello/update traffic out that interface
+- still advertise the connected network elsewhere
+
+---
+
+## EIGRP `network` Command
+
+Example:
+
+```bash
+network 10.0.0.0
+```
+
+Same general purpose as RIP:
+
+- activate EIGRP on interfaces whose IP addresses match
+- advertise those connected networks
+
+However, EIGRP can also use wildcard masks.
+
+---
+
+## Wildcard Mask in EIGRP
+
+EIGRP does not use a normal subnet mask in the `network` command.
+
+It uses a wildcard mask.
+
+A wildcard mask is the inverse of a subnet mask.
+
+Examples:
+
+- `/24` = `255.255.255.0` → wildcard `0.0.0.255`
+- `/16` = `255.255.0.0` → wildcard `0.0.255.255`
+- `/28` = `255.255.255.240` → wildcard `0.0.0.15`
+
+Shortcut:
+
+- subtract each subnet mask octet from 255
+
+Example:
+
+- 255.255.255.240
+- 255-255 = 0
+- 255-255 = 0
+- 255-255 = 0
+- 255-240 = 15
+
+Result:
+
+- `0.0.0.15`
+
+---
+
+## Wildcard Logic
+
+In wildcard masks:
+
+- `0` = must match
+- `1` = does not need to match
+
+So the wildcard controls which bits must match between:
+
+- the interface IP
+- the EIGRP network command
+
+---
+
+## Example
+
+Command:
+
+```bash
+network 172.16.1.0 0.0.0.15
+```
+
+This means:
+
+- first 28 bits must match
+- activate EIGRP on interfaces in that /28 range
+
+---
+
+## EIGRP Router ID
+
+EIGRP uses a router ID to identify the router.
+
+Router ID selection order:
+
+1. manually configured router ID
+2. highest IP on a loopback interface
+3. highest IP on a physical interface
+
+Manual configuration example:
+
+```bash
+eigrp router-id 1.1.1.1
+```
+
+This takes highest priority.
+
+Important note:
+
+- router ID looks like an IP address
+- but it is really just a 32-bit identifier
+
+---
+
+## EIGRP Verification Command
+
+Main command:
+
+```bash
+show ip protocols
+```
+
+Useful output includes:
+
+- AS number
+- metric components
+- router ID
+- auto-summary state
+- maximum paths
+- configured networks
+- passive interfaces
+- neighbors
+- administrative distance
+
+---
+
+## EIGRP K Values
+
+Shown in `show ip protocols`.
+
+Default active metric components:
+
+- K1 = bandwidth
+- K3 = delay
+
+Others are 0 by default.
+
+This is what makes EIGRP metric more complex than RIP.
+
+---
+
+## EIGRP Administrative Distance
+
+Default values:
+
+- internal EIGRP = 90
+- external EIGRP = 170
+
+Important:
+
+- internal EIGRP routes are highly preferred
+- EIGRP external is much less preferred
+
+---
+
+## EIGRP in Routing Table
+
+EIGRP routes appear with code:
+
+- `D`
+
+Not `E`.
+
+This is easy to confuse.
+
+Remember:
+
+- `D` = EIGRP route
+
+EIGRP metrics often look much larger than OSPF or RIP metrics.
+
+That is normal.
+
+---
+
+## Similarities Between RIP and EIGRP
+
+Both are:
+
+- IGPs
+- distance vector family protocols
+- configured with `router ...`
+- support `network` commands
+- support `passive-interface`
+- verified with `show ip protocols`
+- use administrative distance
+- support ECMP with `maximum-paths`
+
+---
+
+## Differences Between RIP and EIGRP
+
+### RIP
+- very simple
+- metric = hop count
+- max 15 hops
+- slow updates every 30 seconds
+- not scalable
+- route code = `R`
+- AD = 120
+
+### EIGRP
+- more advanced
+- metric = bandwidth + delay
+- scalable
+- faster convergence
+- unequal-cost load balancing
+- route code = `D`
+- AD = 90 for internal routes
+
+---
+
+## Why This Matters for OSPF
+
+Learning RIP and EIGRP helps because OSPF also uses many of the same routing concepts:
+
+- dynamic route advertisements
+- passive interfaces
+- router ID
+- administrative distance
+- maximum paths
+- verification with `show ip protocols`
+
+So this lesson builds your routing foundation before going deeper into OSPF.
+
+---
+
+## Key Facts to Remember
+
+### RIP
+- distance vector
+- metric = hop count
+- max 15 hops
+- use version 2
+- disable auto-summary
+- RIPv2 multicast = `224.0.0.9`
+- code in route table = `R`
+- AD = 120
+
+### EIGRP
+- advanced distance vector
+- metric = bandwidth + delay
+- multicast = `224.0.0.10`
+- AS number must match
+- uses wildcard masks
+- route code = `D`
+- AD = 90 internal, 170 external
+- supports unequal-cost load balancing
+
+---
+
+## Summary
+
+This lesson gave a practical overview of RIP and EIGRP.
+
+RIP is simple but limited:
+
+- easy to understand
+- poor for real modern networks
+
+EIGRP is much more capable:
+
+- faster
+- smarter metric
+- more scalable
+- supports unequal-cost load balancing
+
+Main lesson:
+
+- know what each protocol is
+- know how they differ
+- know the key commands and concepts
+- use this knowledge as preparation for OSPF
