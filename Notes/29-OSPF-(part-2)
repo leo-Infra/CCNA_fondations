@@ -1,0 +1,337 @@
+# Day 29 - OSPF Part 2
+
+## OSPF Metric
+
+OSPF uses a metric called cost.
+
+The route with the lowest total cost is preferred.
+
+OSPF cost is based on interface bandwidth.
+
+Formula:
+
+Cost = Reference Bandwidth / Interface Bandwidth
+
+By default, the reference bandwidth is 100 Mbps.
+
+This creates a problem because:
+- Ethernet 10 Mbps = cost 10
+- FastEthernet 100 Mbps = cost 1
+- GigabitEthernet 1000 Mbps = cost 1
+- 10 GigabitEthernet 10000 Mbps = cost 1
+
+So by default, FastEthernet, GigabitEthernet, and 10Gig Ethernet can all end up with the same cost of 1.
+
+That is why the default reference bandwidth is not good enough in modern networks.
+
+To fix this, it is recommended to change the reference bandwidth on every router in the OSPF domain.
+
+Command:
+- `auto-cost reference-bandwidth <value>`
+
+Important:
+- The value is entered in Mbps
+- It must be the same on all OSPF routers
+
+Example:
+- `auto-cost reference-bandwidth 100000`
+
+That means:
+- FastEthernet 100 Mbps = 100000 / 100 = 1000
+- GigabitEthernet 1000 Mbps = 100000 / 1000 = 100
+- 10Gig Ethernet 10000 Mbps = 100000 / 10000 = 10
+
+This gives a much better path selection.
+
+## Route Cost
+
+The total OSPF cost to a destination is the sum of the outgoing interface costs along the path.
+
+Example:
+If a packet goes from R1 to R2 and then to R4, and each outgoing interface has a cost of 100, the total route cost is:
+
+- 100 + 100 + 100 = 300
+
+Loopback interfaces have a cost of 1.
+
+So if R1 reaches a loopback on R2, the path cost includes:
+- R1 outgoing interface cost
+- plus loopback cost 1
+
+Example:
+- 100 + 1 = 101
+
+## Ways to Change OSPF Cost
+
+There are three ways to influence OSPF cost.
+
+### 1. Change the reference bandwidth
+This is the recommended method.
+
+Command:
+- `auto-cost reference-bandwidth <value>`
+
+### 2. Manually set the cost on an interface
+This overrides the automatic calculation.
+
+Command:
+- `ip ospf cost <value>`
+
+Example:
+- `ip ospf cost 10000`
+
+### 3. Change the bandwidth value on the interface
+This is not recommended.
+
+Command:
+- `bandwidth <value>`
+
+Important:
+- This command changes the bandwidth value used for calculations
+- It does not change the actual physical speed of the interface
+- The real interface speed is changed with the `speed` command, not the `bandwidth` command
+
+Also note:
+- `bandwidth` is configured in kilobits per second
+- `auto-cost reference-bandwidth` is configured in megabits per second
+
+So always pay attention to units.
+
+## Useful Show Commands for Cost
+
+To check OSPF cost on a specific interface:
+- `show ip ospf interface <interface>`
+
+To quickly check all OSPF-enabled interfaces:
+- `show ip ospf interface brief`
+
+## OSPF Neighbors
+
+OSPF works only if routers become neighbors.
+
+This is one of the most important parts of OSPF.
+
+If routers do not become neighbors:
+- they do not exchange LSAs
+- they do not build the same LSDB
+- they do not calculate routes correctly
+- OSPF will not work
+
+When OSPF is activated on an interface, the router starts sending Hello packets.
+
+These Hello packets are used to:
+- discover potential neighbors
+- check compatibility
+- build the neighbor relationship
+
+### Hello Packet Facts
+- Default Hello timer on Ethernet = 10 seconds
+- Default Dead timer on Ethernet = 40 seconds
+- Hello packets are sent to multicast address `224.0.0.5`
+- OSPF uses IP protocol number `89`
+
+Important:
+- RIP multicast = 224.0.0.9
+- EIGRP multicast = 224.0.0.10
+- OSPF multicast = 224.0.0.5
+
+## OSPF Neighbor States
+
+Routers go through a series of states before reaching a full adjacency.
+
+The correct order is:
+
+- Down
+- Init
+- 2-Way
+- Exstart
+- Exchange
+- Loading
+- Full
+
+You need to know this order.
+
+### Down
+The router does not know the neighbor yet.
+
+It may be sending Hello packets, but it has not received one from the other router.
+
+### Init
+The router received a Hello packet from the neighbor.
+
+However, its own Router ID is not yet listed in that Hello packet.
+
+So communication is only one-way at this moment.
+
+### 2-Way
+Each router has received a Hello packet that contains its own Router ID.
+
+This means two-way communication is working.
+
+At this point:
+- routers are neighbors
+- they are ready to move forward
+
+On some network types, the DR and BDR election happens here.
+
+### Exstart
+The routers decide which one will be Master and which one will be Slave.
+
+The router with the higher Router ID becomes the Master.
+
+This is only for the database exchange process.
+
+They use DBD packets to negotiate this.
+
+### Exchange
+The routers exchange DBD packets.
+
+These packets contain summaries of the LSAs in each router’s LSDB.
+
+They are not sending full LSAs yet.
+
+They are only describing what they have.
+
+### Loading
+The routers compare what they have learned from the DBD exchange.
+
+If a router is missing LSAs, it sends LSR packets to request them.
+
+The other router replies with LSU packets.
+
+Then LSAck packets are used to acknowledge receipt.
+
+### Full
+The routers now have a full adjacency.
+
+Their LSDBs are synchronized.
+
+OSPF is fully operational between them.
+
+After that, they continue sending Hellos to keep the adjacency alive.
+
+## OSPF Packet Types
+
+There are five main OSPF packet types.
+
+### 1. Hello
+Used to discover and maintain neighbors.
+
+### 2. DBD (Database Description)
+Used to describe the LSDB contents.
+
+### 3. LSR (Link State Request)
+Used to request missing LSAs.
+
+### 4. LSU (Link State Update)
+Used to send LSAs.
+
+### 5. LSAck (Link State Acknowledgment)
+Used to acknowledge received LSAs.
+
+## Neighbor Maintenance
+
+Even after Full state is reached, routers continue sending Hellos.
+
+This keeps the adjacency alive.
+
+The Dead timer resets every time a Hello is received.
+
+If the Dead timer reaches 0:
+- the neighbor is declared down
+- the neighbor entry is removed
+- OSPF recalculates if needed
+
+## OSPF Show Commands for Neighbors
+
+To check OSPF neighbors:
+- `show ip ospf neighbor`
+
+Useful things you can see:
+- Neighbor Router ID
+- State
+- Dead timer
+- DR / BDR role
+
+To check detailed OSPF interface info:
+- `show ip ospf interface`
+
+Useful things you can see:
+- Hello timer
+- Dead timer
+- Cost
+- Neighbor count
+- Adjacent neighbor count
+
+## Additional OSPF Configuration
+
+### Enable OSPF directly on an interface
+Instead of using the network command, you can activate OSPF directly under the interface.
+
+Command:
+- `ip ospf <process-id> area <area-id>`
+
+Example:
+- `ip ospf 1 area 0`
+
+This is done in interface configuration mode.
+
+### Passive Interface
+You can make a specific interface passive with:
+- `passive-interface <interface>`
+
+You can also make all interfaces passive by default:
+- `passive-interface default`
+
+Then re-enable only the ones that should form neighbors:
+- `no passive-interface <interface>`
+
+This can be useful when you have many passive interfaces.
+
+If OSPF is configured directly on interfaces instead of with network commands, `show ip protocols` will display:
+- `routing on interfaces configured explicitly`
+
+instead of listing routing networks.
+
+## What I need to remember
+
+- OSPF metric is called cost
+- Cost = Reference Bandwidth / Interface Bandwidth
+- Default reference bandwidth is 100 Mbps
+- Because of that, FastEthernet, GigabitEthernet, and 10Gig can all have cost 1 by default
+- This is why I should change the reference bandwidth
+- The same reference bandwidth must be configured on all OSPF routers
+- Route cost is the sum of outgoing interface costs
+- Loopback cost = 1
+- Three ways to change cost:
+  - change reference bandwidth
+  - manually set `ip ospf cost`
+  - change `bandwidth` value, but this is not recommended
+- `bandwidth` does not change the real speed
+- OSPF requires routers to become neighbors to work
+- OSPF Hello multicast address = 224.0.0.5
+- OSPF IP protocol number = 89
+- Default Ethernet timers:
+  - Hello = 10 seconds
+  - Dead = 40 seconds
+- OSPF neighbor states order:
+  - Down
+  - Init
+  - 2-Way
+  - Exstart
+  - Exchange
+  - Loading
+  - Full
+- Master/Slave is decided in Exstart
+- DBD packets are exchanged in Exchange
+- LSR, LSU, and LSAck are used in Loading
+- Full means full adjacency and synchronized LSDB
+- Important commands:
+  - `show ip ospf interface`
+  - `show ip ospf interface brief`
+  - `show ip ospf neighbor`
+  - `auto-cost reference-bandwidth`
+  - `ip ospf cost`
+  - `ip ospf <process-id> area <area-id>`
+  - `passive-interface default`
+  - `no passive-interface <interface>`
